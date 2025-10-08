@@ -1,46 +1,38 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { CartProvider } from '@/components/cart/CartContext';
-import MiniCart from '@/components/MiniCart';
-import MobileCart from '@/components/MobileCart'
-export const metadata: Metadata = {
-  title: 'Distribution Pagé — Quincaillerie en ligne',
-  description: 'Boutique de quincaillerie — Populaires, rabais, catégories.',
-};
+import './globals.css'
+import { Suspense } from 'react'
+import type { Metadata } from 'next'
 
-const BANNER_SRC = '/banniere.png'; // mets le bon nom si différent
+export const metadata: Metadata = {
+  title: 'Distribution Pagé',
+  description: 'Boutique en ligne de quincaillerie moderne – outils, plomberie, électricité et plus.',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body className="bg-white text-black">
-        <CartProvider>
-          {/* Bannière plein largeur */}
-          <header className="relative w-full">
-            <img
-              src={BANNER_SRC}
-              alt="Bannière Distribution Pagé"
-              className="block w-full h-56 md:h-72 lg:h-80 object-cover"
-            />
-          </header>
+      <body className="bg-gray-100 text-gray-900">
+        {/* --- Bande noire du haut avec logo --- */}
+        <header className="bg-black text-white py-4 shadow-md flex items-center justify-center">
+          <img
+            src="/Distribution (3).png"
+            alt="Logo Distribution Pagé"
+            className="h-12 mr-3"
+          />
+          <h1 className="text-2xl font-bold tracking-wide">Distribution Pagé</h1>
+        </header>
 
-          {/* Mini-cart fixe à gauche (desktop) */}
-          <MiniCart />
-<MiniCart />     {/* visible à partir de md (bureau) */}
-<MobileCart />   {/* bouton + tiroir (mobile) */}
-
-          {/* Décale le contenu pour ne pas passer sous le mini-cart sur desktop */}
-          <main className="md:pl-72">
+        {/* --- Contenu principal entouré d’un Suspense --- */}
+        <main className="min-h-screen">
+          <Suspense fallback={<p className="text-center p-8 text-gray-500">Chargement...</p>}>
             {children}
-          </main>
+          </Suspense>
+        </main>
 
-          <footer className="mt-16 border-t">
-            <div className="container mx-auto px-4 py-8 text-sm text-gray-600">
-              © {new Date().getFullYear()} Distribution Pagé — $CAD
-            </div>
-          </footer>
-        </CartProvider>
+        {/* --- Pied de page --- */}
+        <footer className="bg-black text-white text-center py-4 mt-10">
+          <p className="text-sm">© {new Date().getFullYear()} Distribution Pagé. Tous droits réservés.</p>
+        </footer>
       </body>
     </html>
-  );
+  )
 }
