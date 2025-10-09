@@ -1,11 +1,10 @@
-'use client'
-
 import './globals.css'
 import Image from 'next/image'
 import Providers from './providers'
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Distribution Pagé - Quincaillerie en ligne',
   description: 'Boutique d’outils et de quincaillerie moderne en ligne.',
 }
@@ -32,7 +31,7 @@ export default function RootLayout({
           </div>
         </header>
 
-        {/* Contenu principal avec Suspense et Providers */}
+        {/* Contenu principal : layout serveur, mais enfants client via <Providers> */}
         <main className="min-h-screen">
           <Providers>
             <Suspense fallback={<p className="text-center p-8 text-gray-500">Chargement...</p>}>
