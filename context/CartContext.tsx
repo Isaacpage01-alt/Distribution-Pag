@@ -49,7 +49,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
-// ✅ Pas d'erreur si le provider n'est pas encore dispo (évite le crash au build)
 export function useCart() {
   const ctx = useContext(CartContext);
   if (!ctx) {
