@@ -1,29 +1,37 @@
-// notepad .\components\SearchBar.tsx
-'use client'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+"use client";
 
-export default function SearchBar({ placeholder='Rechercher des produits...' }: { placeholder?: string }) {
-  const router = useRouter()
-  const sp = useSearchParams()
-  const [q, setQ] = useState(sp.get('q') ?? '')
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState, FormEvent } from "react";
 
-  useEffect(() => { setQ(sp.get('q') ?? '') }, [sp])
+export default function SearchBar() {
+  // lit la query ?q= depuis l'URL
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault()
-    router.push(`/search?q=${encodeURIComponent(q)}`)
-  }
+  const [q, setQ] = useState<string>(searchParams.get("q") ?? "");
+
+  // si l'URL change (ex: back/forward), on resynchronise l'input
+  useEffect(() => {
+    setQ(searchParams.get("q") ?? "");
+  }, [searchParams]);
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const url = q ? `/search?q=${encodeURIComponent(q)}` : "/search";
+    router.push(url);
+  };
 
   return (
-    <form onSubmit={submit} className="w-full max-w-xl flex gap-2">
+    <form onSubmit={onSubmit} className="flex gap-2 w-full max-w-xl">
       <input
         value={q}
-        onChange={e => setQ(e.target.value)}
-        className="flex-1 border rounded-xl px-3 py-2"
-        placeholder={placeholder}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Rechercher un produit…"
+        className="flex-1 border rounded-lg px-3 py-2"
       />
-      <button className="px-4 py-2 rounded-xl bg-teal-500 text-white">Rechercher</button>
+      <button className="border rounded-lg px-4 py-2 bg-black text-white">
+        Rechercher
+      </button>
     </form>
-  )
+  );
 }
