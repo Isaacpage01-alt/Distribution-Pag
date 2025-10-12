@@ -21,27 +21,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<Item[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Charger / Sauvegarder localStorage (côté client)
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("cart_v1");
-      if (raw) setItems(JSON.parse(raw));
-    } catch {}
+    try { const raw = localStorage.getItem("cart_v1"); if (raw) setItems(JSON.parse(raw)); } catch {}
   }, []);
   useEffect(() => {
-    try {
-      localStorage.setItem("cart_v1", JSON.stringify(items));
-    } catch {}
+    try { localStorage.setItem("cart_v1", JSON.stringify(items)); } catch {}
   }, [items]);
 
   const addItem = (product: Omit<Item, "qty">, qty = 1) => {
     setItems(prev => {
       const i = prev.findIndex(p => p.id === product.id);
-      if (i !== -1) {
-        const copy = [...prev];
-        copy[i] = { ...copy[i], qty: copy[i].qty + qty };
-        return copy;
-      }
+      if (i !== -1) { const copy = [...prev]; copy[i] = { ...copy[i], qty: copy[i].qty + qty }; return copy; }
       return [...prev, { ...product, qty }];
     });
     setIsOpen(true);
@@ -59,7 +49,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
-// ✅ Fallback SANS throw pour éviter l'erreur au prérendu
+// ✅ Pas d'erreur si le provider n'est pas encore dispo (évite le crash au build)
 export function useCart() {
   const ctx = useContext(CartContext);
   if (!ctx) {
