@@ -1,5 +1,6 @@
 "use client";
 import { useState, type ReactNode } from "react";
+import { Suspense } from "react";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -7,6 +8,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr">
       <body style={{ margin: 0, fontFamily: "sans-serif" }}>
+        {/* ---------- HEADER : logo + bouton panier ---------- */}
         <header
           style={{
             background: "#fff",
@@ -36,8 +38,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </button>
         </header>
 
-        <main>{children}</main>
+        {/* ---------- CONTENU DES PAGES (avec Suspense) ---------- */}
+        <main>
+          <Suspense fallback={null}>
+            {children}
+          </Suspense>
+        </main>
 
+        {/* ---------- PANIER (tiroir) ---------- */}
         {open && (
           <div
             style={{
