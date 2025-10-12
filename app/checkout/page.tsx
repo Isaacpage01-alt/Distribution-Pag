@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
-export const dynamic = "force-dynamic";
-const CheckoutBody = dynamic(() => import("./CheckoutBody"), { ssr: false });
-export default function CheckoutPage() { return <CheckoutBody />; }
+export default function CheckoutPage() {
+  return <div style={{padding:20,fontFamily:"sans-serif"}}>Checkout en maintenance — de retour bientôt.</div>;
+}
