@@ -11,7 +11,7 @@ export type CartItem = {
 
 type CartCtx = {
   items: CartItem[];
-  addItem: (p: Omit<CartItem,"qty">, qty?: number) => void;
+  addItem: (p: Omit<CartItem, "qty">, qty?: number) => void;
   removeItem: (id: CartItem["id"]) => void;
   setQty: (id: CartItem["id"], qty: number) => void;
   clear: () => void;
@@ -20,16 +20,23 @@ type CartCtx = {
 };
 
 const CartContext = createContext<CartCtx | null>(null);
-export const useCart = () => {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("CartContext indisponible");
-  return ctx;
+
+// ✅ Par défaut, renvoie des no-op au lieu de throw (évite les crash client)
+const FALLBACK: CartCtx = {
+  items: [],
+  addItem: () => {},
+  removeItem: () => {},
+  setQty: () => {},
+  clear: () => {},
+  totalQty: 0,
+  totalPrice: 0,
 };
+
+export const useCart = () => useContext(CartContext) ?? FALLBACK;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  // Charge depuis localStorage
   useEffect(() => {
     try {
       const raw = localStorage.getItem("cart:v1");
@@ -37,7 +44,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
-  // Sauvegarde dans localStorage
   useEffect(() => {
     try {
       localStorage.setItem("cart:v1", JSON.stringify(items));
@@ -55,15 +61,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return [...curr, { ...p, qty }];
     });
   };
-
   const removeItem: CartCtx["removeItem"] = (id) =>
     setItems((curr) => curr.filter((it) => it.id !== id));
-
   const setQty: CartCtx["setQty"] = (id, qty) =>
     setItems((curr) =>
       curr.map((it) => (it.id === id ? { ...it, qty: Math.max(1, qty) } : it))
     );
-
   const clear = () => setItems([]);
 
   const { totalQty, totalPrice } = useMemo(() => {
@@ -72,6 +75,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return { totalQty, totalPrice };
   }, [items]);
 
-  const value: CartCtx = { items, addItem, removeItem, setQty, clear, totalQty, totalPrice };
+  const value: CartCtx = {
+    items,
+    addItem,
+    removeItem,
+    setQty,
+    clear,
+    totalQty,
+    totalPrice,
+  };
+
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
