@@ -1,68 +1,77 @@
 "use client";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-type Item = { id: string; title: string; price: number; image?: string; qty: number };
+export type CartItem = {
+  id: string | number;
+  title: string;
+  price: number;
+  image?: string;
+  qty: number;
+};
 
 type CartCtx = {
-  items: Item[];
-  addItem: (p: Omit<Item, "qty">, qty?: number) => void;
-  removeItem: (id: string) => void;
-  setQty: (id: string, qty: number) => void;
+  items: CartItem[];
+  addItem: (p: Omit<CartItem,"qty">, qty?: number) => void;
+  removeItem: (id: CartItem["id"]) => void;
+  setQty: (id: CartItem["id"], qty: number) => void;
   clear: () => void;
   totalQty: number;
   totalPrice: number;
-  isOpen: boolean;
-  setIsOpen: (v: boolean) => void;
-} | null;
+};
 
-const CartContext = createContext<CartCtx>(null);
+const CartContext = createContext<CartCtx | null>(null);
+export const useCart = () => {
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("CartContext indisponible");
+  return ctx;
+};
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<Item[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [items, setItems] = useState<CartItem[]>([]);
 
+  // Charge depuis localStorage
   useEffect(() => {
-    try { const raw = localStorage.getItem("cart_v1"); if (raw) setItems(JSON.parse(raw)); } catch {}
+    try {
+      const raw = localStorage.getItem("cart:v1");
+      if (raw) setItems(JSON.parse(raw));
+    } catch {}
   }, []);
+
+  // Sauvegarde dans localStorage
   useEffect(() => {
-    try { localStorage.setItem("cart_v1", JSON.stringify(items)); } catch {}
+    try {
+      localStorage.setItem("cart:v1", JSON.stringify(items));
+    } catch {}
   }, [items]);
 
-  const addItem = (product: Omit<Item, "qty">, qty = 1) => {
-    setItems(prev => {
-      const i = prev.findIndex(p => p.id === product.id);
-      if (i !== -1) { const copy = [...prev]; copy[i] = { ...copy[i], qty: copy[i].qty + qty }; return copy; }
-      return [...prev, { ...product, qty }];
+  const addItem: CartCtx["addItem"] = (p, qty = 1) => {
+    setItems((curr) => {
+      const i = curr.findIndex((it) => it.id === p.id);
+      if (i >= 0) {
+        const next = [...curr];
+        next[i] = { ...next[i], qty: next[i].qty + qty };
+        return next;
+      }
+      return [...curr, { ...p, qty }];
     });
-    setIsOpen(true);
   };
 
-  const removeItem = (id: string) => setItems(prev => prev.filter(p => p.id !== id));
-  const setQty = (id: string, qty: number) =>
-    setItems(prev => prev.map(p => (p.id === id ? { ...p, qty: Math.max(1, qty) } : p)));
+  const removeItem: CartCtx["removeItem"] = (id) =>
+    setItems((curr) => curr.filter((it) => it.id !== id));
+
+  const setQty: CartCtx["setQty"] = (id, qty) =>
+    setItems((curr) =>
+      curr.map((it) => (it.id === id ? { ...it, qty: Math.max(1, qty) } : it))
+    );
+
   const clear = () => setItems([]);
 
-  const totalQty = useMemo(() => items.reduce((a, b) => a + b.qty, 0), [items]);
-  const totalPrice = useMemo(() => items.reduce((a, b) => a + b.qty * (b.price || 0), 0), [items]);
+  const { totalQty, totalPrice } = useMemo(() => {
+    const totalQty = items.reduce((s, it) => s + it.qty, 0);
+    const totalPrice = items.reduce((s, it) => s + it.qty * it.price, 0);
+    return { totalQty, totalPrice };
+  }, [items]);
 
-  const value = { items, addItem, removeItem, setQty, clear, totalQty, totalPrice, isOpen, setIsOpen };
+  const value: CartCtx = { items, addItem, removeItem, setQty, clear, totalQty, totalPrice };
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
-}
-
-export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) {
-    return {
-      items: [],
-      addItem: () => {},
-      removeItem: () => {},
-      setQty: () => {},
-      clear: () => {},
-      totalQty: 0,
-      totalPrice: 0,
-      isOpen: false,
-      setIsOpen: () => {},
-    };
-  }
-  return ctx;
 }
