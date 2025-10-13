@@ -1,92 +1,68 @@
 "use client";
+
 import "./globals.css";
-import { type ReactNode, useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Suspense } from "react";
 import { CartProvider } from "../context/CartContext";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
 
   return (
     <html lang="fr">
-      <body style={{ margin: 0, fontFamily: "sans-serif" }}>
-        {/* BANDEAU TEST (à retirer quand tout est OK) */}
-        <div style={{ background: "#ff0", padding: 6, textAlign: "center" }}>
-          HEADER TEST — si tu vois ce bandeau, c’est le BON layout ✅
-        </div>
-
+      <body className="min-h-screen bg-white text-black antialiased">
         <CartProvider>
-          {/* HEADER : logo + bouton panier */}
-          <header
-            style={{
-              background: "#fff",
-              borderBottom: "1px solid #eee",
-              padding: "10px 20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              position: "sticky",
-              top: 0,
-              zIndex: 50,
-            }}
-          >
-            <img src="/logo.png" alt="Distribution Pagé" style={{ height: 50 }} />
-            <button
-              type="button"
-              onClick={() => setOpen(!open)}
-              aria-label="Ouvrir le panier"
-              aria-expanded={open}
-              style={{
-                background: "#00c2a8",
-                color: "#fff",
-                border: "none",
-                borderRadius: 8,
-                padding: "8px 16px",
-                cursor: "pointer",
-              }}
-            >
-              🛒 Panier
-            </button>
+          {/* HEADER */}
+          <header className="sticky top-0 z-50 bg-white border-b">
+            <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
+              <a href="/" className="flex items-center gap-2">
+                {/* Assure-toi d'avoir public/logo.png */}
+                <img src="/logo.png" alt="Distribution Pagé" className="h-12 w-auto" />
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                aria-label="Ouvrir le panier"
+                aria-expanded={open}
+                className="rounded-lg px-4 py-2 bg-teal-500 text-white hover:bg-teal-600"
+              >
+                🛒 Panier
+              </button>
+            </div>
           </header>
 
-          {/* CONTENU (avec Suspense global) */}
-          <main>
+          {/* CONTENU */}
+          <main className="max-w-6xl mx-auto px-4 py-8">
             <Suspense fallback={null}>{children}</Suspense>
           </main>
 
-          {/* PANIER (tiroir ultra simple) */}
+          {/* TIROIR PANIER */}
           {open && (
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                right: 0,
-                width: 300,
-                height: "100%",
-                background: "#fff",
-                boxShadow: "-2px 0 8px rgba(0,0,0,0.2)",
-                padding: 20,
-              }}
-            >
-              <h2>Mon panier</h2>
-              <p>Votre panier est vide.</p>
-              <button
+            <div className="fixed inset-0 z-50">
+              {/* Fond sombre */}
+              <div
+                className="absolute inset-0 bg-black/40"
                 onClick={() => setOpen(false)}
-                style={{
-                  marginTop: 20,
-                  background: "#00c2a8",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 8,
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                }}
-              >
-                Fermer
-              </button>
+              />
+              {/* Panneau */}
+              <div className="absolute right-0 top-0 h-full w-[320px] bg-white shadow-xl p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold">Mon panier</h2>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="px-3 py-1 rounded-md bg-teal-500 text-white"
+                  >
+                    Fermer
+                  </button>
+                </div>
+                <p className="text-sm text-gray-600">Aucun produit ajouté pour l’instant.</p>
+              </div>
             </div>
           )}
 
+          {/* Forcer un fond blanc si d’anciens styles traînent */}
           <style>{`header,.top-banner,.site-header{background:#fff!important}`}</style>
         </CartProvider>
       </body>
