@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export type CartItem = { id: string | number; title: string; price: number; image?: string; qty: number; };
+
 type CartCtx = {
   items: CartItem[];
   addItem: (p: Omit<CartItem,"qty">, qty?: number) => void;
@@ -18,6 +19,7 @@ export const useCart = () => useContext(CartContext) ?? FALLBACK;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+
   useEffect(() => { try { const raw = localStorage.getItem("cart:v1"); if (raw) setItems(JSON.parse(raw)); } catch {} }, []);
   useEffect(() => { try { localStorage.setItem("cart:v1", JSON.stringify(items)); } catch {} }, [items]);
 
