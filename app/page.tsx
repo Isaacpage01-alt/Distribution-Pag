@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import HomeClient from "./home-client";
 
-export const dynamic = "force-dynamic"; // évite le prerender strict
+export const dynamic = "force-dynamic";
 
 export default function Page() {
   return (
