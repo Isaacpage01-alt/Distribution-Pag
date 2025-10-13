@@ -1,17 +1,20 @@
 "use client";
+import "./globals.css";
 import { type ReactNode, useState } from "react";
 import { Suspense } from "react";
 import { CartProvider } from "../context/CartContext";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
 
   return (
     <html lang="fr">
-      <body<div style={{background:'#ff0', padding:6, textAlign:'center'}}>
-  HEADER TEST — si tu vois ce bandeau, c’est le BON layout ✅
-</div>
- style={{ margin: 0, fontFamily: "sans-serif" }}>
+      <body style={{ margin: 0, fontFamily: "sans-serif" }}>
+        {/* BANDEAU TEST (à retirer quand tout est OK) */}
+        <div style={{ background: "#ff0", padding: 6, textAlign: "center" }}>
+          HEADER TEST — si tu vois ce bandeau, c’est le BON layout ✅
+        </div>
+
         <CartProvider>
           {/* HEADER : logo + bouton panier */}
           <header
@@ -29,7 +32,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           >
             <img src="/logo.png" alt="Distribution Pagé" style={{ height: 50 }} />
             <button
+              type="button"
               onClick={() => setOpen(!open)}
+              aria-label="Ouvrir le panier"
+              aria-expanded={open}
               style={{
                 background: "#00c2a8",
                 color: "#fff",
