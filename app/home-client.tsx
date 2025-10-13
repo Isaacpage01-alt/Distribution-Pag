@@ -1,12 +1,14 @@
-
 "use client";
 
 import Link from "next/link";
-// Si tes alias "@/..." ne fonctionnent pas en prod, utilise des imports relatifs:
+// Utilise des imports RELATIFS si l’alias @ ne marche pas chez toi
 import { ProductCard } from "../components/ProductCard";
 import { CATEGORIES, PRODUCTS } from "../lib/products";
 
 export default function HomeClient() {
+  // ICI tu peux utiliser useSearchParams si nécessaire
+  // const params = useSearchParams();  <-- OK ici car fichier client
+
   const populaires = PRODUCTS.filter(p => p.populaire).slice(0, 8);
   const rabais = PRODUCTS.filter(p => p.rabais).slice(0, 8);
 
@@ -17,11 +19,8 @@ export default function HomeClient() {
         <h2 className="text-xl md:text-2xl font-bold mb-4">Catégories</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {CATEGORIES.map(c => (
-            <Link
-              key={c.slug}
-              href={`/categorie/${c.slug}`}
-              className="border rounded-xl p-4 text-center hover:shadow-sm bg-gray-50"
-            >
+            <Link key={c.slug} href={`/categorie/${c.slug}`}
+              className="border rounded-xl p-4 text-center hover:shadow-sm bg-gray-50">
               {c.label}
             </Link>
           ))}
