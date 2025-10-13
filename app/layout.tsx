@@ -8,7 +8,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="fr">
-      <body style={{ margin: 0, fontFamily: "sans-serif" }}>
+      <body<div style={{background:'#ff0', padding:6, textAlign:'center'}}>
+  HEADER TEST — si tu vois ce bandeau, c’est le BON layout ✅
+</div>
+ style={{ margin: 0, fontFamily: "sans-serif" }}>
         <CartProvider>
           {/* HEADER : logo + bouton panier */}
           <header
