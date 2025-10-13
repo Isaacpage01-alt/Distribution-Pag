@@ -1,53 +1,50 @@
 "use client";
 
-import { useCart } from "@/context/CartContext"; // si l'alias @ ne marche pas: import { useCart } from "../context/CartContext";
+import { useCart } from "../context/CartContext"; // ← NO alias, works everywhere
 
 type Product = {
   id: string | number;
   title: string;
-  price: number;          // en dollars CAD
-  image?: string;         // chemin vers /public/...
+  price: number | string | undefined;
+  image?: string;
 };
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
 
+  // Defensive: handle string/undefined and NaN
+  const priceNumber =
+    typeof product.price === "number"
+      ? product.price
+      : Number(product.price ?? 0);
+
   const priceLabel = new Intl.NumberFormat("fr-CA", {
     style: "currency",
     currency: "CAD",
     minimumFractionDigits: 2,
-  }).format(product.price);
+  }).format(isFinite(priceNumber) ? priceNumber : 0);
 
-  const imgSrc = product.image && product.image.trim() !== ""
-    ? product.image
-    : "/placeholder.png"; // ajoute un placeholder dans /public si tu veux
+  const imgSrc =
+    product.image && product.image.trim() !== "" ? product.image : "/placeholder.png";
 
-  const brand = "#18CFE6"; // turquoise de ta bannière
+  const brand = "#18CFE6";
 
   return (
     <article className="border rounded-xl p-3 space-y-3 shadow-sm hover:shadow transition">
-      {/* Image */}
       <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-gray-50">
-        <img
-          src={imgSrc}
-          alt={product.title}
-          className="h-full w-full object-cover"
-          loading="lazy"
-        />
+        <img src={imgSrc} alt={product.title} className="h-full w-full object-cover" loading="lazy" />
       </div>
 
-      {/* Titre + prix */}
       <header className="space-y-1">
         <h3 className="font-semibold leading-tight line-clamp-2">{product.title}</h3>
         <p className="text-sm text-gray-600">{priceLabel}</p>
       </header>
 
-      {/* CTA */}
       <button
         type="button"
         onClick={() =>
           addItem(
-            { id: product.id, title: product.title, price: product.price, image: product.image },
+            { id: product.id, title: product.title, price: isFinite(priceNumber) ? priceNumber : 0, image: product.image },
             1
           )
         }
