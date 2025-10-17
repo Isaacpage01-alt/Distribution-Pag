@@ -1,24 +1,32 @@
-// notepad .\app\categorie\[slug]\page.tsx
-import { PRODUCTS, CATEGORIES } from '@/lib/products'
-import { ProductCard } from '@/components/ProductCard'
-import Link from 'next/link'
+"use client";
+import { useParams } from "next/navigation";
+import { products } from "@/lib/products";
+import Price from "@/components/Price";
+import { useCart } from "@/context/CartContext";
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const cat = CATEGORIES.find(c => c.slug === params.slug)
-  const list = PRODUCTS.filter(p => p.categorie === params.slug)
+export default function ProductDetailPage() {
+  const params = useParams<{ slug: string }>();
+  const product = products.find((p) => p.slug === params.slug);
+  const { add } = useCart();
+
+  if (!product) return <div>Produit introuvable.</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <div className="flex items-center gap-3 text-sm text-gray-600">
-        <Link href="/">Accueil</Link>
-        <span>/</span>
-        <span className="capitalize">{cat?.label ?? params.slug}</span>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <img src={product.image} alt={product.title} className="w-full rounded-xl object-cover" />
       </div>
-      <h1 className="text-2xl font-bold">{cat?.label ?? params.slug}</h1>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {list.map(p => <ProductCard key={p.id} product={p} />)}
-        {list.length === 0 && <div className="text-gray-500">Aucun produit dans cette catégorie.</div>}
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold">{product.title}</h1>
+        <Price price={product.price} compareAt={product.compareAt} />
+        <p className="text-gray-700">{product.description}</p>
+        <button
+          onClick={() => add(product, 1)}
+          className="rounded-xl bg-blue-600 px-5 py-3 text-white shadow hover:bg-blue-700"
+        >
+          Ajouter au panier
+        </button>
       </div>
     </div>
-  )
+  );
 }
