@@ -1,62 +1,32 @@
-'use client'
-
-import Link from 'next/link'
-import Image from 'next/image'
-import { useState } from 'react'
+"use client";
+import Link from "next/link";
+import { useState } from "react";
+import CartDrawer from "@/components/CartDrawer";
 
 export default function Header() {
-  const [search, setSearch] = useState('')
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (search.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(search)}`
-    }
-  }
-
+  const [open, setOpen] = useState(false);
   return (
-    <header className="bg-black text-white shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-
-        {/* Logo à gauche */}
-        <Link href="/">
-          <Image
-            src="/logo.png"
-            alt="Logo Distribution Pagé"
-            width={160}
-            height={50}
-            priority
-            className="object-contain"
-          />
-        </Link>
-
-        {/* Barre de recherche au centre */}
-        <form
-          onSubmit={handleSearch}
-          className="hidden sm:flex flex-1 justify-center mx-6"
-        >
-          <input
-            type="text"
-            placeholder="Rechercher un produit..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-md px-4 py-2 text-black rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-          />
-        </form>
-
-        {/* Panier à droite */}
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/checkout" className="relative">
-            <Image
-              src="/panier.svg"
-              alt="Panier"
-              width={28}
-              height={28}
-              className="cursor-pointer hover:scale-110 transition-transform"
-            />
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/logo.svg" alt="Distribution Pagé" className="h-8" />
+            <span className="hidden sm:block font-semibold">Distribution Pagé</span>
           </Link>
+          <nav className="hidden md:flex items-center gap-4 text-sm text-gray-700">
+            <Link href="/products?cat=outils" className="hover:text-blue-600">Outils</Link>
+            <Link href="/products?cat=plomberie" className="hover:text-blue-600">Plomberie</Link>
+            <Link href="/products?cat=quincaillerie" className="hover:text-blue-600">Quincaillerie</Link>
+            <Link href="/products?cat=exterieur" className="hover:text-blue-600">Extérieur</Link>
+            <Link href="/products?cat=electricite" className="hover:text-blue-600">Électricité</Link>
+          </nav>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link href="/products" className="text-sm hover:underline">Boutique</Link>
+          <button onClick={() => setOpen(true)} className="rounded-xl border px-3 py-2 text-sm hover:shadow">Panier</button>
         </div>
       </div>
+      <CartDrawer open={open} onClose={() => setOpen(false)} />
     </header>
-  )
+  );
 }
