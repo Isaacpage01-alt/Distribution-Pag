@@ -1,26 +1,70 @@
-export const CATEGORIES = [
-  { slug: 'quincaillerie', label: 'Quincaillerie' },
-  { slug: 'outils', label: 'Outils' },
-  { slug: 'plomberie', label: 'Plomberie' },
-  { slug: 'electricite', label: 'Électricité' },
-] as const;
-
-export type CategorySlug = typeof CATEGORIES[number]['slug'];
-
 export type Product = {
-  id: string;         // sans espaces ni accents
-  titre: string;
-  prix: number;       // utiliser le point pour les décimales
-  categorie: CategorySlug;
-  populaire?: boolean;
-  rabais?: boolean;
-  image?: string;     // ex: '/images/marteau.jpg'
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  price: number;
+  compareAt?: number;
+  category: "outils" | "plomberie" | "quincaillerie" | "exterieur" | "electricite";
+  image: string;
 };
 
-export const PRODUCTS: Product[] = [
-  { id: 'vis-traitees-2-8mm',      titre: 'Vis traitées 2’’ 8 mm',     prix: 4.00,  categorie: 'quincaillerie', image: '/images/vis.jpg' },
-  { id: 'marteau-charpentier-325g', titre: 'Marteau charpentier 325 g', prix: 18.99, categorie: 'outils',        populaire: true,          image: '/images/mareteau.png' },
-  { id: 'perceuse-compacte',        titre: 'Perceuse compacte 12V',     prix: 99.99, categorie: 'outils',        populaire: true, rabais: true, image: '/images/perceuse.jpg' },
-  { id: 'ruban-teflon',             titre: 'Ruban téflon 1/2”',         prix: 1.99,  categorie: 'plomberie',     image: '/images/ruban.jpg' },
-  { id: 'prise-exterieure-gfci',    titre: 'Prise extérieure GFCI',     prix: 22.50, categorie: 'electricite',   rabais: true,             image: '/images/prise.jpg' },
+export const products: Product[] = [
+  {
+    id: "vis-8mm-zinc-100",
+    slug: "vis-traite-8mm-100",
+    title: "Vis traitée 8mm (100 pcs)",
+    description: "Boîte de 100 vis traitées, parfaites pour projets extérieurs.",
+    price: 4.0,
+    category: "quincaillerie",
+    image: "/maretau.png", // remplace par ta vraie image
+  },
+  {
+    id: "marteau-pro",
+    slug: "marteau-pro",
+    title: "Marteau professionnel 16 oz",
+    description: "Poignée anti-vibration, tête acier trempé.",
+    price: 19.99,
+    compareAt: 24.99,
+    category: "outils",
+    image: "/maretau.png",
+  },
+  {
+    id: "ruban-teflon",
+    slug: "ruban-teflon",
+    title: "Ruban téflon 1/2\"",
+    description: "Étanchéité pour raccords de plomberie.",
+    price: 1.99,
+    category: "plomberie",
+    image: "/file.svg",
+  },
+  {
+    id: "rallonge-exterieur",
+    slug: "rallonge-exterieur",
+    title: "Rallonge extérieure 25m",
+    description: "Câble résistant aux intempéries, calibre 14.",
+    price: 34.9,
+    category: "exterieur",
+    image: "/window.svg",
+  },
+  {
+    id: "prise-15a",
+    slug: "prise-15a",
+    title: "Prise électrique 15A — blanc",
+    description: "Installation facile, vis incluses.",
+    price: 2.49,
+    category: "electricite",
+    image: "/globe.svg",
+  },
 ];
+
+export const categories = [
+  { slug: "outils", name: "Outils", count: products.filter(p => p.category === "outils").length },
+  { slug: "plomberie", name: "Plomberie", count: products.filter(p => p.category === "plomberie").length },
+  { slug: "quincaillerie", name: "Quincaillerie", count: products.filter(p => p.category === "quincaillerie").length },
+  { slug: "exterieur", name: "Extérieur", count: products.filter(p => p.category === "exterieur").length },
+  { slug: "electricite", name: "Électricité", count: products.filter(p => p.category === "electricite").length },
+];
+
+export const featured = products;              // pour la section "Populaires"
+export const discounted = products.filter(p => p.compareAt); // pour "En rabais"
