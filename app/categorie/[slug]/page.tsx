@@ -20,10 +20,7 @@ export default function ProductDetailPage() {
         <h1 className="text-2xl font-semibold">{product.title}</h1>
         <Price price={product.price} compareAt={product.compareAt} />
         <p className="text-gray-700">{product.description}</p>
-        <button
-          onClick={() => add(product, 1)}
-          className="rounded-xl bg-blue-600 px-5 py-3 text-white shadow hover:bg-blue-700"
-        >
+        <button onClick={() => add(product, 1)} className="rounded-xl bg-blue-600 px-5 py-3 text-white shadow hover:bg-blue-700">
           Ajouter au panier
         </button>
       </div>
