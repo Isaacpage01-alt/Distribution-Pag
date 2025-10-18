@@ -5,53 +5,51 @@ import ProductCard from "@/components/ProductCard";
 export default function HomePage() {
   return (
     <div className="space-y-10">
-      {/* BANNIÈRE FULL-WIDTH */}
+      {/* Bannière full width */}
       <section className="-mx-4 sm:-mx-6 lg:-mx-8">
         <div className="relative w-full h-[220px] sm:h-[300px] lg:h-[380px]">
-          <img
-            src="/banniere.png"
-            alt="Distribution Pagé"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          <img src="/banniere.png" alt="Distribution Pagé" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-black/30" />
           <div className="absolute inset-0 flex items-center">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h1 className="text-white text-2xl sm:text-3xl font-semibold">
-                Bienvenue chez Distribution Pagé
-              </h1>
-              <p className="text-white/90 mt-2">
-                Outils, quincaillerie, plomberie, extérieur et électricité — livrés chez vous.
-              </p>
+              <h1 className="text-white text-2xl sm:text-3xl font-semibold">Bienvenue chez Distribution Pagé</h1>
+              <p className="text-white/90 mt-2">Outils, quincaillerie, plomberie, extérieur et électricité — livrés chez vous.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* … laisse tes sections Catégories / Populaires / En rabais comme avant … */}
+      {/* Populaires */}
       <section className="rounded-2xl bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Populaires</h2>
-          <Link href="/products" className="text-sm text-blue-600 hover:underline">
-            Voir plus
-          </Link>
+          <Link href="/products" className="text-sm text-blue-600 hover:underline">Voir tout</Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {featured.slice(0, 8).map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
+          {featured.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
         </div>
       </section>
 
+      {/* En rabais */}
       <section className="rounded-2xl bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">En rabais</h2>
-          <Link href="/products?promo=1" className="text-sm text-blue-600 hover:underline">
-            Voir plus
-          </Link>
+          <Link href="/products?promo=1" className="text-sm text-blue-600 hover:underline">Voir les rabais</Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {discounted.slice(0, 8).map((p) => (
-            <ProductCard key={p.id} product={p} />
+          {discounted.slice(0, 8).map((p) => <ProductCard key={p.id} product={p} />)}
+        </div>
+      </section>
+
+      {/* Catégories */}
+      <section className="rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">Catégories</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+          {categories.map((c) => (
+            <Link key={c.slug} href={`/products?cat=${c.slug}`} className="rounded-xl border p-4 text-center hover:shadow">
+              <div className="font-medium">{c.name}</div>
+              <div className="text-xs text-gray-500">{c.count} produits</div>
+            </Link>
           ))}
         </div>
       </section>
