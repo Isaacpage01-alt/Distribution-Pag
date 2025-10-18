@@ -1,9 +1,11 @@
-export const dynamic = "force-static";
 import "./globals.css";
-import { CartProvider } from "@/context/CartContext";
 import Header from "@/components/Header";
+import { CartProvider } from "@/context/CartContext";
+import type { Metadata } from "next";
 
-export const metadata = {
+export const dynamic = "force-static";
+
+export const metadata: Metadata = {
   title: "Distribution Pagé",
   description: "Boutique — outils, quincaillerie, plomberie, extérieur, électricité",
 };
