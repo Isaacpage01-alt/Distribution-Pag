@@ -21,37 +21,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setItems(JSON.parse(raw));
-    } catch {}
+    try { const raw = localStorage.getItem(KEY); if (raw) setItems(JSON.parse(raw)); } catch {}
   }, []);
-
   useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(items));
-    } catch {}
+    try { localStorage.setItem(KEY, JSON.stringify(items)); } catch {}
   }, [items]);
 
   const total = useMemo(() => items.reduce((sum, it) => sum + Number(it.price) * Number(it.qty), 0), [items]);
 
   const add = (p: Product, qty = 1) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.id === p.id);
-      if (existing) return prev.map((i) => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
+    setItems(prev => {
+      const ex = prev.find(i => i.id === p.id);
+      if (ex) return prev.map(i => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
       return [...prev, { ...p, qty }];
     });
   };
-
-  const updateQty = (id: string, qty: number) =>
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, qty: Math.max(1, qty) } : i)));
-
-  const remove = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
+  const updateQty = (id: string, qty: number) => setItems(prev => prev.map(i => (i.id === id ? { ...i, qty: Math.max(1, qty) } : i)));
+  const remove = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
   const clear = () => setItems([]);
 
-  const checkout = async () => {
-    alert("Paiement à configurer plus tard (Stripe).");
-  };
+  const checkout = async () => { window.location.href = "/checkout"; };
 
   return <Ctx.Provider value={{ items, total, add, updateQty, remove, clear, checkout }}>{children}</Ctx.Provider>;
 }
