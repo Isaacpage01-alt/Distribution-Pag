@@ -22,7 +22,7 @@ export default function CheckoutPage() {
                     <div className="text-sm text-gray-500">Qté: {it.qty}</div>
                   </div>
                 </div>
-                <div className="font-semibold">{(it.price * it.qty).toFixed(2)} $</div>
+                <div className="font-semibold">{(Number(it.price) * Number(it.qty)).toFixed(2)} $</div>
               </li>
             ))}
           </ul>
