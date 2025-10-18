@@ -1,4 +1,3 @@
-// app/not-found.tsx
 export default function NotFound() {
   return (
     <div className="max-w-3xl mx-auto py-16 px-4">
