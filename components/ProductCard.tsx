@@ -1,14 +1,6 @@
 import Link from "next/link";
-
-export type Product = {
-  id: string;
-  slug: string;
-  title: string;
-  description?: string;
-  price: number;
-  compareAt?: number;
-  image: string;
-};
+import Price from "@/components/Price";
+import type { Product } from "@/lib/products";
 
 export default function ProductCard({ product }: { product: Product }) {
   return (
@@ -16,7 +8,7 @@ export default function ProductCard({ product }: { product: Product }) {
       <img src={product.image} alt={product.title} className="h-40 w-full rounded-xl object-cover" />
       <div className="mt-2 space-y-1">
         <div className="line-clamp-2 text-sm font-medium">{product.title}</div>
-        <div className="text-sm font-semibold">{Number(product.price).toFixed(2)} $</div>
+        <Price price={product.price} compareAt={product.compareAt} />
       </div>
     </Link>
   );
