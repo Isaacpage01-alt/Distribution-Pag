@@ -8,25 +8,29 @@ export default function ProductTile({ product }: { product: Product }) {
   const { add } = useCart();
 
   return (
-    <div className="rounded-xl border border-black bg-white p-2 shadow-sm hover:shadow transition">
+    <div className="rounded-lg border border-black bg-white p-1.5 shadow-sm hover:shadow transition">
       <Link href={`/products/${product.slug}`} className="block">
-        {/* Image plus petite */}
+        {/* Image ~2x plus petite */}
         <img
           src={product.image}
           alt={product.title}
-          className="h-32 w-full rounded-lg object-cover"
+          className="h-24 w-full rounded-md object-cover"
         />
-        <div className="mt-2">
-          <div className="line-clamp-2 text-[13px] font-medium text-black">
+        <div className="mt-1">
+          <div className="line-clamp-2 text-[12px] leading-tight font-medium text-black">
             {product.title}
           </div>
-          <Price price={product.price} compareAt={product.compareAt} className="text-black" />
+          <Price
+            price={product.price}
+            compareAt={product.compareAt}
+            className="!text-[12px] text-black"
+          />
         </div>
       </Link>
 
       <button
         onClick={() => add(product, 1)}
-        className="mt-2 w-full rounded-lg bg-cyan-400 px-3 py-2 text-[13px] text-black font-semibold hover:brightness-110"
+        className="mt-1.5 w-full rounded-md bg-cyan-400 px-2 py-1.5 text-[12px] text-black font-semibold hover:brightness-110"
       >
         Ajouter au panier
       </button>
