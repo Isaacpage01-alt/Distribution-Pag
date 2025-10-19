@@ -13,11 +13,25 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className="h-full">
-      <body className="min-h-screen text-gray-900">
+      <body className="min-h-screen text-white">
+        {/* ======= FOND PLEIN ÉCRAN (image + léger voile) ======= */}
+        <div aria-hidden className="fixed inset-0 -z-10">
+          <img
+            src="/bg.jpg?v=2"    // v=2 pour casser le cache
+            alt=""
+            className="h-full w-full object-cover"
+          />
+          {/* voile pour lisibilité, ajuste l’opacité si tu veux */}
+          <div className="absolute inset-0 bg-black/30" />
+        </div>
+        {/* ===================================================== */}
+
         <CartProvider>
           <Header />
-          <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">{children}</main>
-          <footer className="border-t py-8 text-center text-sm text-gray-500">
+          <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+            {children}
+          </main>
+          <footer className="border-t border-white/10 py-8 text-center text-sm text-gray-300">
             © {new Date().getFullYear()} Distribution Pagé
           </footer>
         </CartProvider>
