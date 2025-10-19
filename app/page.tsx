@@ -4,7 +4,7 @@ import ProductTile from "@/components/ProductTile";
 
 export default function HomePage() {
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       {/* Bannière en haut */}
       <section className="-mx-4 sm:-mx-6 lg:-mx-8">
         <div className="relative w-full h-[220px] sm:h-[300px] lg:h-[380px]">
@@ -17,7 +17,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Barre de recherche centrée (plus étroite) */}
+      {/* Barre de recherche centrée (étroite) */}
       <section className="flex justify-center">
         <form action="/search" className="w-full max-w-md flex gap-2 px-4">
           <input
@@ -31,10 +31,10 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* 6 catégories séparées, taille modérée */}
+      {/* 6 catégories — taille modérée, bien séparées */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-xl font-semibold text-white mb-3">Catégories</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
+        <h2 className="text-xl font-semibold text-white mb-4">Catégories</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8">
           {categories.map((c) => (
             <Link
               key={c.slug}
@@ -48,30 +48,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Populaires — cartes plus petites, espacement plus grand */}
+      {/* Populaires — cartes plus espacées */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <h2 className="text-xl font-semibold text-white">Populaires</h2>
           <Link href="/products" className="text-sm text-cyan-300 hover:underline">
             Voir tout
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10">
           {featured.slice(0, 8).map((p) => (
             <ProductTile key={p.id} product={p} />
           ))}
         </div>
       </section>
 
-      {/* En rabais — mêmes tailles/espacements */}
+      {/* En rabais — mêmes espacements */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <h2 className="text-xl font-semibold text-white">En rabais</h2>
           <Link href="/products?promo=1" className="text-sm text-cyan-300 hover:underline">
             Voir les rabais
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10">
           {discounted.slice(0, 8).map((p) => (
             <ProductTile key={p.id} product={p} />
           ))}
