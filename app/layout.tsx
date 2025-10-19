@@ -5,22 +5,18 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Distribution Pagé",
-  description: "Boutique — outils, quincaillerie, plomberie, extérieur, électricité",
+  description: "Outils, quincaillerie, plomberie, électricité, intérieur, extérieur",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body className="min-h-screen text-white relative overflow-x-hidden">
-        {/* ===== Image de fond ===== */}
-        <img
-          src="/bg.jpg?v=3"
-          alt="Fond du site"
-          className="fixed top-0 left-0 w-full h-full object-cover -z-10"
-        />
-        <div className="fixed top-0 left-0 w-full h-full bg-black/30 -z-10" />
-        {/* ========================= */}
-
+      <body
+        className="
+          min-h-screen text-white
+          bg-[url('/bg.jpg?v=4')] bg-fixed bg-cover bg-center
+        "
+      >
         <CartProvider>
           <Header />
           <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
