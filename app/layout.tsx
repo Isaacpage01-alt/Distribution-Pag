@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className="
           min-h-screen text-white
-          bg-[url('/bg.jpg?v=4')] bg-fixed bg-cover bg-center
+          bg-[url('/bg.jpg?v=5')] bg-fixed bg-cover bg-center
         "
       >
         <CartProvider>
