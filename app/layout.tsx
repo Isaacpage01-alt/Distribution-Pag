@@ -3,8 +3,6 @@ import Header from "@/components/Header";
 import { CartProvider } from "@/context/CartContext";
 import type { Metadata } from "next";
 
-export const dynamic = "force-static";
-
 export const metadata: Metadata = {
   title: "Distribution Pagé",
   description: "Boutique — outils, quincaillerie, plomberie, extérieur, électricité",
@@ -12,19 +10,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className="h-full">
-      <body className="min-h-screen text-white">
-        {/* ======= FOND PLEIN ÉCRAN (image + léger voile) ======= */}
-        <div aria-hidden className="fixed inset-0 -z-10">
-          <img
-            src="/bg.jpg?v=2"    // v=2 pour casser le cache
-            alt=""
-            className="h-full w-full object-cover"
-          />
-          {/* voile pour lisibilité, ajuste l’opacité si tu veux */}
-          <div className="absolute inset-0 bg-black/30" />
-        </div>
-        {/* ===================================================== */}
+    <html lang="fr">
+      <body className="min-h-screen text-white relative overflow-x-hidden">
+        {/* ===== Image de fond ===== */}
+        <img
+          src="/bg.jpg?v=3"
+          alt="Fond du site"
+          className="fixed top-0 left-0 w-full h-full object-cover -z-10"
+        />
+        <div className="fixed top-0 left-0 w-full h-full bg-black/30 -z-10" />
+        {/* ========================= */}
 
         <CartProvider>
           <Header />
