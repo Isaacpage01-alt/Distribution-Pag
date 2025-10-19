@@ -1,26 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* L'image doit être à: /public/bg.jpg */
-html, body { height: 100%; }
-
-body {
-  position: relative;
-  min-height: 100%;
-  background-color: #000; /* fallback noir si l'image ne charge pas */
-  overflow-x: hidden;
-}
-
-/* Met l'image de fond derrière tout, même si des sections ont un fond */
-body::before {
-  content: "";
-  position: fixed;      /* fixé au viewport */
-  inset: 0;
-  z-index: -1;          /* derrière tout le contenu */
-  background-image: url("/bg.jpg?v=1"); /* v=1 = anti-cache */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  opacity: 1;           /* baisse si tu veux un voile: 0.85 etc. */
-}
