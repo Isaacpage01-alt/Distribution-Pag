@@ -1,3 +1,5 @@
+export const dynamic = "force-static";
+export const runtime = "edge"; // rapide et sans cold start
 import "./globals.css";
 import Header from "@/components/Header";
 import { CartProvider } from "@/context/CartContext";
