@@ -1,3 +1,5 @@
+export const dynamic = "force-static";
+export const runtime = "edge";
 import Link from "next/link";
 import { categories, featured, discounted } from "@/lib/products";
 import ProductTile from "@/components/ProductTile";
