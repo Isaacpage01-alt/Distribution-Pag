@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   description: "Outils, quincaillerie, plomberie, électricité, intérieur, extérieur",
 };
 
-// Servez en statique ultra-rapide (pas de serverless)
 export const dynamic = "force-static";
 export const runtime = "edge";
 
@@ -24,12 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }}
         className="min-h-screen text-white"
       >
-        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
           {children}
         </main>
-        <footer className="border-t border-white/10 py-8 text-center text-sm text-gray-300">
-          © {new Date().getFullYear()} Distribution Pagé
-        </footer>
       </body>
     </html>
   );
