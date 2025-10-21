@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         // 👇 Fond imposé en inline style (impossible à “purger”/ignorer)
         style={{
-          backgroundImage: "url('/bg.jpg?v=10')",
+          backgroundImage: "url('/banniere.png?v=10')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundAttachment: "fixed",
