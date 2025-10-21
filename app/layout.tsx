@@ -8,23 +8,26 @@ export const metadata: Metadata = {
   description: "Outils, quincaillerie, plomberie, électricité, intérieur, extérieur",
 };
 
-// Pages statiques (pas de serverless) → évite 504 et 404
 export const dynamic = "force-static";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body
-        style={{
-          backgroundImage: "url('/bg.jpg?v=1')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-          backgroundRepeat: "no-repeat",
-          backgroundColor: "#000",
-        }}
-        className="min-h-screen text-white"
-      >
+      <body className="min-h-screen text-white relative overflow-x-hidden">
+        {/* Fond plein écran. Si /bg.jpg est absent, on bascule automatiquement sur /banniere.png */}
+        <div className="fixed inset-0 -z-10">
+          <img
+            src="/bg.jpg?v=2"
+            alt=""
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = "/banniere.png?v=2";
+            }}
+          />
+          {/* voile léger pour la lisibilité */}
+          <div className="absolute inset-0 bg-black/25" />
+        </div>
+
         <CartProvider>
           <Header />
           <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
