@@ -17,17 +17,14 @@ export default function HomePage() {
   const TOP = CAT_PILLS.slice(0, 3);
   const BOTTOM = CAT_PILLS.slice(3);
 
-  // composant visuel d’un pill (bord fin + texte un peu plus gros)
   const Pill = ({ label, slug }: { label: string; slug: string }) => (
     <Link href={`/products?cat=${slug}`} style={{ WebkitTapHighlightColor: "transparent" }}>
       <div
         className="
           inline-flex items-center justify-center select-none
-          rounded-full
-          border-[3px] border-black          /* <<< contour plus fin */
+          rounded-full border-[3px] border-black
           bg-black text-white font-semibold
-          px-14 py-6 text-3xl                /* <<< un peu plus gros */
-          min-w-[360px]                      /* largeur confort */
+          px-14 py-6 text-3xl min-w-[360px]
           shadow-[0_2px_0_0_#000]
           transition-transform hover:-translate-y-0.5 active:translate-y-0
         "
@@ -39,21 +36,6 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12">
-      {/* Marqueur de version */}
-      <div className="text-center text-xs text-white/70">Home v7</div>
-
-      {/* Bannière */}
-      <section className="-mx-4 sm:-mx-6 lg:-mx-8">
-        <div className="relative w-full h-[220px] sm:h-[280px] lg:h-[320px]">
-          <img
-            src="/banniere.png"
-            alt="Distribution Pagé"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-      </section>
-
       {/* Barre de recherche */}
       <section className="flex justify-center">
         <form action="/search" className="w-full max-w-[420px] flex gap-2 px-4">
@@ -68,20 +50,17 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories — 2 rangées avec gap vertical garanti */}
+      {/* Catégories : deux rangées avec gros espace vertical */}
       <section className="mx-auto max-w-[1300px] px-4 pt-10 pb-20">
         <h2 className="text-lg font-semibold text-white mb-8">Catégories</h2>
 
-        {/* colonne avec gros ESPACE ENTRE RANGÉES */}
-        <div className="flex flex-col items-center gap-y-24 sm:gap-y-28 lg:gap-y-32">
-          {/* rangée du haut */}
+        <div className="flex flex-col items-center gap-y-32 sm:gap-y-36 lg:gap-y-40">
           <div className="cat-grid flex items-center justify-center gap-x-12">
             {TOP.map((c) => (
               <Pill key={c.slug} label={c.label} slug={c.slug} />
             ))}
           </div>
 
-          {/* rangée du bas */}
           <div className="cat-grid flex items-center justify-center gap-x-12">
             {BOTTOM.map((c) => (
               <Pill key={c.slug} label={c.label} slug={c.slug} />
