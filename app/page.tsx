@@ -14,20 +14,18 @@ export default function HomePage() {
     { label: "extérieur", slug: "exterieur" },
   ];
 
-  // on découpe en 2 rangées fixes (3 + 3)
   const TOP = CAT_PILLS.slice(0, 3);
   const BOTTOM = CAT_PILLS.slice(3);
 
-  // un petit composant pour dessiner la pill noire
   const Pill = ({ label, slug }: { label: string; slug: string }) => (
     <Link href={`/products?cat=${slug}`} style={{ WebkitTapHighlightColor: "transparent" }}>
       <div
         className="
           inline-flex items-center justify-center select-none
           rounded-full
-          border-[6px] border-black
+          border-[8px] border-black
           bg-black text-white font-semibold
-          px-12 py-5 text-xl min-w-[330px]
+          px-16 py-8 text-2xl min-w-[380px]
           shadow-[0_2px_0_0_#000]
           transition-transform hover:-translate-y-0.5 active:translate-y-0
         "
@@ -39,10 +37,8 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12">
-      {/* Marqueur visuel pour vérifier la version */}
-      <div className="text-center text-xs text-white/70">Home v5</div>
+      <div className="text-center text-xs text-white/70">Home v6</div>
 
-      {/* Bannière */}
       <section className="-mx-4 sm:-mx-6 lg:-mx-8">
         <div className="relative w-full h-[220px] sm:h-[280px] lg:h-[320px]">
           <img
@@ -54,7 +50,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Barre de recherche centrée, étroite */}
       <section className="flex justify-center">
         <form action="/search" className="w-full max-w-[420px] flex gap-2 px-4">
           <input
@@ -68,29 +63,26 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories — deux rangées séparées avec gros espace vertical */}
+      {/* Catégories plus grandes + plus espacées */}
       <section className="mx-auto max-w-[1200px] px-4 pt-12 pb-20">
         <h2 className="text-lg font-semibold text-white mb-10">Catégories</h2>
 
-        {/* rangée du haut */}
-        <div className="cat-grid flex items-center justify-center gap-x-10">
+        <div className="cat-grid flex items-center justify-center gap-x-12">
           {TOP.map((c) => (
             <Pill key={c.slug} label={c.label} slug={c.slug} />
           ))}
         </div>
 
-        {/* >>> SÉPARATEUR VERTICAL FORCÉ <<< */}
-        <div className="mt-16 sm:mt-20 lg:mt-24" />
+        {/* grand espace entre les rangées */}
+        <div className="mt-32 sm:mt-40 lg:mt-48" />
 
-        {/* rangée du bas */}
-        <div className="cat-grid flex items-center justify-center gap-x-10">
+        <div className="cat-grid flex items-center justify-center gap-x-12">
           {BOTTOM.map((c) => (
             <Pill key={c.slug} label={c.label} slug={c.slug} />
           ))}
         </div>
       </section>
 
-      {/* Populaires — cartes compactes + spacing */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">Populaires</h2>
@@ -105,7 +97,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* En rabais — mêmes réglages */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">En rabais</h2>
