@@ -14,10 +14,33 @@ export default function HomePage() {
     { label: "extérieur", slug: "exterieur" },
   ];
 
+  // on découpe en 2 rangées fixes (3 + 3)
+  const TOP = CAT_PILLS.slice(0, 3);
+  const BOTTOM = CAT_PILLS.slice(3);
+
+  // un petit composant pour dessiner la pill noire
+  const Pill = ({ label, slug }: { label: string; slug: string }) => (
+    <Link href={`/products?cat=${slug}`} style={{ WebkitTapHighlightColor: "transparent" }}>
+      <div
+        className="
+          inline-flex items-center justify-center select-none
+          rounded-full
+          border-[6px] border-black
+          bg-black text-white font-semibold
+          px-12 py-5 text-xl min-w-[330px]
+          shadow-[0_2px_0_0_#000]
+          transition-transform hover:-translate-y-0.5 active:translate-y-0
+        "
+      >
+        {label}
+      </div>
+    </Link>
+  );
+
   return (
     <div className="space-y-12">
       {/* Marqueur visuel pour vérifier la version */}
-      <div className="text-center text-xs text-white/70">Home v4</div>
+      <div className="text-center text-xs text-white/70">Home v5</div>
 
       {/* Bannière */}
       <section className="-mx-4 sm:-mx-6 lg:-mx-8">
@@ -45,29 +68,24 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories — 3 en haut / 3 en bas, pills NOIRS, énorme espace vertical, sans bleu */}
-      <section className="mx-auto max-w-[1100px] px-4 pt-12 pb-20">
+      {/* Catégories — deux rangées séparées avec gros espace vertical */}
+      <section className="mx-auto max-w-[1200px] px-4 pt-12 pb-20">
         <h2 className="text-lg font-semibold text-white mb-10">Catégories</h2>
 
-        {/* IMPORTANT: .cat-grid active notre reset CSS des <a> */}
-        <div className="cat-grid grid grid-cols-3 gap-x-10 gap-y-28 place-items-center">
-          {CAT_PILLS.map((c) => (
-            <Link key={c.slug} href={`/products?cat=${c.slug}`} style={{ WebkitTapHighlightColor: "transparent" }}>
-              {/* On stylise le contenu interne, pas <a> lui-même */}
-              <div
-                className="
-                  inline-flex items-center justify-center select-none
-                  rounded-full
-                  border-[6px] border-black
-                  bg-black text-white font-semibold
-                  px-12 py-5 text-xl min-w-[330px]
-                  shadow-[0_2px_0_0_#000]
-                  transition-transform hover:-translate-y-0.5 active:translate-y-0
-                "
-              >
-                {c.label}
-              </div>
-            </Link>
+        {/* rangée du haut */}
+        <div className="cat-grid flex items-center justify-center gap-x-10">
+          {TOP.map((c) => (
+            <Pill key={c.slug} label={c.label} slug={c.slug} />
+          ))}
+        </div>
+
+        {/* >>> SÉPARATEUR VERTICAL FORCÉ <<< */}
+        <div className="mt-16 sm:mt-20 lg:mt-24" />
+
+        {/* rangée du bas */}
+        <div className="cat-grid flex items-center justify-center gap-x-10">
+          {BOTTOM.map((c) => (
+            <Pill key={c.slug} label={c.label} slug={c.slug} />
           ))}
         </div>
       </section>
