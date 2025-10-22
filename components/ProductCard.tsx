@@ -1,6 +1,4 @@
 "use client";
-import Link from "next/link";
-import Price from "@/components/Price";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/lib/products";
 
@@ -8,20 +6,45 @@ export default function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
 
   return (
-    <div className="rounded-2xl bg-neutral-900/70 text-white p-3 shadow-sm hover:shadow border border-white/10">
-      <Link href={`/products/${product.slug}`}>
-        <img src={product.image} alt={product.title} className="h-40 w-full rounded-xl object-cover" />
-        <div className="mt-2 space-y-1">
-          <div className="line-clamp-2 text-sm font-medium">{product.title}</div>
-          <Price price={product.price} compareAt={product.compareAt} />
+    <div className="w-full max-w-[200px] mx-auto rounded-xl border border-black bg-white p-3 shadow-sm hover:shadow transition">
+      {/* image compacte */}
+      <div className="relative w-full">
+        <div className="h-32 sm:h-36 rounded-md overflow-hidden bg-gray-100">
+          <img
+            src={product.image}
+            alt={product.title}
+            className="w-full h-full object-contain"
+            loading="lazy"
+          />
         </div>
-      </Link>
-      <button
-        onClick={() => add(product, 1)}
-        className="mt-3 w-full rounded-xl bg-cyan-400 px-4 py-2 text-black font-semibold hover:brightness-110"
-      >
-        Ajouter au panier
-      </button>
+      </div>
+
+      {/* infos */}
+      <div className="mt-3 space-y-1">
+        <div className="text-[11px] text-gray-600">{product.category}</div>
+        <div className="text-sm font-medium text-black line-clamp-2" title={product.title}>
+          {product.title}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[13px] font-semibold text-black">
+            {product.price.toFixed(2)} $
+          </span>
+          {product.compareAt && product.compareAt > product.price ? (
+            <span className="text-[11px] text-gray-400 line-through">
+              {product.compareAt.toFixed(2)} $
+            </span>
+          ) : null}
+        </div>
+
+        <button
+          onClick={() =>
+            add({ id: product.id, title: product.title, price: product.price, image: product.image }, 1)
+          }
+          className="mt-2 h-8 w-full rounded-lg bg-cyan-400 text-black text-[12px] font-semibold hover:brightness-110"
+        >
+          Ajouter
+        </button>
+      </div>
     </div>
   );
 }
