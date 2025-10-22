@@ -1,25 +1,22 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { CartProvider } from "@/context/CartContext";
+
+import Bg from "@/components/Bg";
 import Banner from "@/components/Banner";
 import Header from "@/components/Header";
-import Bg from "@/components/Bg";
+import { CartProvider } from "@/context/CartContext";
 
 export const metadata: Metadata = {
   title: "Distribution Pagé",
-  description: "Outils, quincaillerie, plomberie, électricité, intérieur et extérieur.",
+  description: "Outils, quincaillerie, plomberie, électricité, intérieur et extérieur",
 };
 
 export const dynamic = "force-static";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body className="relative min-h-screen overflow-x-hidden text-white">
+      <body className="min-h-screen text-white relative overflow-x-hidden">
         <Bg />
         <Banner />
         <CartProvider>
