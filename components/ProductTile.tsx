@@ -1,39 +1,30 @@
 "use client";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/lib/products";
-import Price from "@/components/Price";
-import Link from "next/link";
 
 export default function ProductTile({ product }: { product: Product }) {
   const { add } = useCart();
-
   return (
-    <div className="rounded-md border border-black bg-white p-1 shadow-sm hover:shadow transition max-w-[180px] mx-auto">
-      <Link href={`/products/${product.slug}`} className="block">
-        {/* Image TRÈS compacte */}
-        <img
-          src={product.image}
-          alt={product.title}
-          className="h-20 w-full rounded-[8px] object-cover"
-        />
-        <div className="mt-1">
-          <div className="line-clamp-2 text-[11px] leading-snug font-medium text-black">
-            {product.title}
-          </div>
-          <Price
-            price={product.price}
-            compareAt={product.compareAt}
-            className="!text-[11px] text-black"
-          />
+    <div className="w-full max-w-[220px] mx-auto rounded-xl border border-black bg-white/95 p-3 shadow-sm hover:shadow-md transition">
+      <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+        <img src={product.image} alt={product.title} className="w-full h-full object-contain" loading="lazy" />
+      </div>
+      <div className="mt-3 space-y-1">
+        <div className="text-[12px] text-gray-600">{product.category}</div>
+        <div className="text-sm font-medium text-black truncate" title={product.title}>{product.title}</div>
+        <div className="flex items-center gap-2">
+          <span className="text-[13px] font-semibold text-black">{product.price.toFixed(2)} $</span>
+          {product.compareAt && product.compareAt > product.price ? (
+            <span className="text-[11px] text-gray-400 line-through">{product.compareAt.toFixed(2)} $</span>
+          ) : null}
         </div>
-      </Link>
-
-      <button
-        onClick={() => add(product, 1)}
-        className="mt-1 w-full rounded-[8px] bg-cyan-400 px-2 py-1 text-[11px] text-black font-semibold hover:brightness-110"
-      >
-        Ajouter au panier
-      </button>
+        <button
+          onClick={() => add({ id: product.id, title: product.title, price: product.price, image: product.image }, 1)}
+          className="mt-2 h-8 w-full rounded-lg bg-cyan-400 text-black text-[12px] font-semibold hover:brightness-110"
+        >
+          Ajouter
+        </button>
+      </div>
     </div>
   );
 }
