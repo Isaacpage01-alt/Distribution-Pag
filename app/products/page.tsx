@@ -1,10 +1,17 @@
+// app/products/page.tsx
 export const dynamic = "force-static";
 
-export default function Products() {
-  return (
-    <div style={{padding:24, color:"#fff"}}>
-      <h1 style={{fontSize:24, fontWeight:700}}>Produits (app/) ✅</h1>
-      <a href="/" style={{textDecoration:"underline", color:"#67e8f9"}}>Retour à l’accueil</a>
-    </div>
-  );
-}
+// --------- Remplace ceci par ton vrai import si tu veux ---------
+// import { products } from "@/lib/products";
+type P = {
+  id: string | number;
+  title: string;
+  image: string;
+  price: number;
+  compareAt?: number;
+  category?: string;
+  categorySlug?: string;
+};
+// Mini dataset de secours si l'import n'existe pas (évite un build cassé)
+const products: P[] = [
+  { id: 1, title: "Marteau 16
