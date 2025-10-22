@@ -5,7 +5,7 @@ import ProductTile from "@/components/ProductTile";
 import { featured, discounted } from "@/lib/products";
 
 export default function HomePage() {
-  // Libellés avec accents, slugs sans accents
+  // Libellés avec accents (affichage) et slugs sans accents (URL)
   const CAT_PILLS = [
     { label: "quincaillerie", slug: "quincaillerie" },
     { label: "outils", slug: "outils" },
@@ -43,12 +43,12 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories — 3 en haut / 3 en bas, gros pills noirs */}
+      {/* Catégories — 3 en haut / 3 en bas, gros pills NOIRS */}
       <section className="mx-auto max-w-[1100px] px-4">
         <h2 className="text-lg font-semibold text-white mb-5">Catégories</h2>
 
-        {/* grille forçée à 3 colonnes (deux rangées) */}
-        <div className="grid grid-cols-3 gap-x-10 gap-y-8 place-items-center">
+        {/* grille fixée à 3 colonnes, grand espace vertical entre les 2 rangées */}
+        <div className="grid grid-cols-3 gap-x-10 gap-y-14 place-items-center">
           {CAT_PILLS.map((c) => (
             <Link
               key={c.slug}
@@ -56,11 +56,12 @@ export default function HomePage() {
               className="
                 inline-flex items-center justify-center
                 rounded-full border-[5px] border-black
-                bg-black text-white font-semibold
-                px-10 py-4 text-lg
+                bg-black text-white visited:text-white hover:text-white no-underline
+                font-semibold px-10 py-4 text-lg
                 min-w-[300px]
                 shadow-[0_2px_0_0_#000]
                 hover:-translate-y-0.5 active:translate-y-0 transition-transform
+                focus:outline-none focus:ring-0
               "
             >
               {c.label}
@@ -69,7 +70,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Populaires */}
+      {/* Populaires — cartes compactes + spacing */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">Populaires</h2>
@@ -84,10 +85,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* En rabais */}
+      {/* En rabais — mêmes réglages */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">En rabais</h2>
+          <Link href="/products?promo=1" className="text-sm text-cyan-300 hover:underline">
+            Voir les rabais
+          </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-8 sm:gap-10 xl:gap-12">
           {discounted.slice(0, 10).map((p) => (
