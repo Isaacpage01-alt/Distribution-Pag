@@ -16,6 +16,9 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12">
+      {/* ====== MARQUEUR VISUEL v3 ====== */}
+      <div className="text-center text-xs text-white/70">Home v3</div>
+
       {/* Bannière */}
       <section className="-mx-4 sm:-mx-6 lg:-mx-8">
         <div className="relative w-full h-[220px] sm:h-[280px] lg:h-[320px]">
@@ -42,30 +45,34 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories — 3 en haut / 3 en bas, pills NOIRS, très grand espace vertical, aucune surcouche bleue */}
-      <section className="mx-auto max-w-[1100px] px-4 pt-10 pb-16 sm:pt-12 sm:pb-20">
-        <h2 className="text-lg font-semibold text-white mb-8">Catégories</h2>
+      {/* Catégories — 3 en haut / 3 en bas, pills NOIRS, ÉNORME espace vertical, AUCUN BLEU */}
+      <section className="mx-auto max-w-[1100px] px-4 pt-12 pb-20">
+        <h2 className="text-lg font-semibold text-white mb-10">Catégories</h2>
 
-        {/* grille fixée à 3 colonnes, ÉNORME ESPACE ENTRE RANGÉES */}
-        <div className="grid grid-cols-3 gap-x-10 gap-y-24 place-items-center">
+        <div className="grid grid-cols-3 gap-x-10 gap-y-28 place-items-center">
           {CAT_PILLS.map((c) => (
             <Link
               key={c.slug}
               href={`/products?cat=${c.slug}`}
-              // supprime le flash bleu/tap highlight sur mobile
+              // supprime le tap-highlight bleu mobile
               style={{ WebkitTapHighlightColor: "transparent" }}
               className="
                 inline-flex items-center justify-center select-none
-                rounded-full border-[5px] border-black
-                bg-black text-white font-semibold
-                px-12 py-5 text-xl min-w-[320px]
+                rounded-full border-[6px] border-black
+                bg-black !text-white font-semibold
+                px-12 py-5 text-xl min-w-[330px]
                 shadow-[0_2px_0_0_#000]
                 transition-transform hover:-translate-y-0.5 active:translate-y-0
+
+                /* force aucune couleur bleue / violette */
                 no-underline decoration-transparent
-                visited:text-white hover:text-white active:text-white focus:text-white
+                hover:!text-white visited:!text-white active:!text-white focus:!text-white
+                hover:!bg-black active:!bg-black focus:!bg-black
+
+                /* supprime tout contour / ring navigateur */
                 outline-none focus:outline-none focus-visible:outline-none
-                ring-0 focus:ring-0 focus-visible:ring-0 ring-transparent focus:ring-transparent
-                focus:bg-black active:bg-black hover:bg-black
+                ring-0 focus:ring-0 focus-visible:ring-0
+                outline-offset-0
                 appearance-none
               "
             >
