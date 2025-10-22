@@ -3,25 +3,43 @@ export const dynamic = "force-static";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/lib/products";
 
-export default function ProductsPage({
-  searchParams,
-}: {
-  searchParams: { cat?: string; promo?: string };
-}) {
-  const { cat, promo } = searchParams || {};
-  let list = products;
+type Props = {
+  searchParams?: {
+    q?: string;
+    cat?: string;
+    promo?: string;
+  };
+};
 
-  if (cat) list = list.filter((p) => p.category === cat);
-  if (promo === "1") list = list.filter((p) => p.compareAt && p.compareAt > p.price);
+export default function ProductsPage({ searchParams }: Props) {
+  const q = (searchParams?.q || "").toLowerCase().trim();
+  const cat = (searchParams?.cat || "").toLowerCase().trim();
+  const promo = (searchParams?.promo || "").trim();
+
+  const list = products
+    .filter((p) => (q ? `${p.title} ${p.category}`.toLowerCase().includes(q) : true))
+    .filter((p) => (cat ? p.categorySlug?.toLowerCase() === cat : true))
+    .filter((p) => (promo ? (p.compareAt && p.compareAt > p.price) : true));
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-semibold">Produits {cat ? `— ${cat}` : ""}</h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mb-4 flex items-end justify-between gap-3">
+        <h1 className="text-xl font-semibold text-white">
+          {cat ? `Catégorie : ${cat}` : q ? `Recherche : “${q}”` : "Tous les produits"}
+        </h1>
+        <div className="text-sm text-gray-300">{list.length} produit(s)</div>
+      </div>
+
+      {/* Grille compacte : petites cartes + beaucoup de colonnes */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-6 sm:gap-7">
         {list.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
       </div>
+
+      {list.length === 0 && (
+        <div className="mt-10 text-gray-300">Aucun produit trouvé.</div>
+      )}
     </div>
   );
 }
