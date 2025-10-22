@@ -20,9 +20,7 @@ export default function Header() {
           </div>
 
           <nav className="flex items-center gap-6">
-            <Link href="/products" className="text-white hover:underline">
-              Produits
-            </Link>
+            <Link href="/products" className="text-white hover:underline">Produits</Link>
             <button
               onClick={() => setOpen(true)}
               className="rounded-full bg-cyan-400 text-black font-semibold px-4 py-2 hover:brightness-110"
