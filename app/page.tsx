@@ -5,7 +5,6 @@ import ProductTile from "@/components/ProductTile";
 import { featured, discounted } from "@/lib/products";
 
 export default function HomePage() {
-  // Libellés (affichage) et slugs (URL)
   const CAT_PILLS = [
     { label: "quincaillerie", slug: "quincaillerie" },
     { label: "outils", slug: "outils" },
@@ -43,27 +42,31 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories — 3 en haut / 3 en bas, pills NOIRS, grand espace vertical & sans contour bleu */}
-      <section className="mx-auto max-w-[1100px] px-4 pt-8 pb-12 sm:pt-10 sm:pb-14">
-        <h2 className="text-lg font-semibold text-white mb-6">Catégories</h2>
+      {/* Catégories — 3 en haut / 3 en bas, pills NOIRS, très grand espace vertical, aucune surcouche bleue */}
+      <section className="mx-auto max-w-[1100px] px-4 pt-10 pb-16 sm:pt-12 sm:pb-20">
+        <h2 className="text-lg font-semibold text-white mb-8">Catégories</h2>
 
-        {/* grille fixée à 3 colonnes, gros ESPACE ENTRE RANGÉES */}
-        <div className="grid grid-cols-3 gap-x-10 gap-y-16 place-items-center">
+        {/* grille fixée à 3 colonnes, ÉNORME ESPACE ENTRE RANGÉES */}
+        <div className="grid grid-cols-3 gap-x-10 gap-y-24 place-items-center">
           {CAT_PILLS.map((c) => (
             <Link
               key={c.slug}
               href={`/products?cat=${c.slug}`}
+              // supprime le flash bleu/tap highlight sur mobile
               style={{ WebkitTapHighlightColor: "transparent" }}
               className="
-                inline-flex items-center justify-center
+                inline-flex items-center justify-center select-none
                 rounded-full border-[5px] border-black
                 bg-black text-white font-semibold
-                px-10 py-4 text-lg min-w-[300px]
+                px-12 py-5 text-xl min-w-[320px]
                 shadow-[0_2px_0_0_#000]
                 transition-transform hover:-translate-y-0.5 active:translate-y-0
                 no-underline decoration-transparent
-                visited:text-white hover:text-white active:text-white
-                outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0
+                visited:text-white hover:text-white active:text-white focus:text-white
+                outline-none focus:outline-none focus-visible:outline-none
+                ring-0 focus:ring-0 focus-visible:ring-0 ring-transparent focus:ring-transparent
+                focus:bg-black active:bg-black hover:bg-black
+                appearance-none
               "
             >
               {c.label}
