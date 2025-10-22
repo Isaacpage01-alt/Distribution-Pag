@@ -5,7 +5,7 @@ import ProductTile from "@/components/ProductTile";
 import { featured, discounted } from "@/lib/products";
 
 export default function HomePage() {
-  // Libellés avec accents (affichage) et slugs sans accents (URL)
+  // Libellés (affichage) et slugs (URL)
   const CAT_PILLS = [
     { label: "quincaillerie", slug: "quincaillerie" },
     { label: "outils", slug: "outils" },
@@ -43,25 +43,27 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories — 3 en haut / 3 en bas, gros pills NOIRS */}
-      <section className="mx-auto max-w-[1100px] px-4">
-        <h2 className="text-lg font-semibold text-white mb-5">Catégories</h2>
+      {/* Catégories — 3 en haut / 3 en bas, pills NOIRS, grand espace vertical & sans contour bleu */}
+      <section className="mx-auto max-w-[1100px] px-4 pt-8 pb-12 sm:pt-10 sm:pb-14">
+        <h2 className="text-lg font-semibold text-white mb-6">Catégories</h2>
 
-        {/* grille fixée à 3 colonnes, grand espace vertical entre les 2 rangées */}
-        <div className="grid grid-cols-3 gap-x-10 gap-y-14 place-items-center">
+        {/* grille fixée à 3 colonnes, gros ESPACE ENTRE RANGÉES */}
+        <div className="grid grid-cols-3 gap-x-10 gap-y-16 place-items-center">
           {CAT_PILLS.map((c) => (
             <Link
               key={c.slug}
               href={`/products?cat=${c.slug}`}
+              style={{ WebkitTapHighlightColor: "transparent" }}
               className="
                 inline-flex items-center justify-center
                 rounded-full border-[5px] border-black
-                bg-black text-white visited:text-white hover:text-white no-underline
-                font-semibold px-10 py-4 text-lg
-                min-w-[300px]
+                bg-black text-white font-semibold
+                px-10 py-4 text-lg min-w-[300px]
                 shadow-[0_2px_0_0_#000]
-                hover:-translate-y-0.5 active:translate-y-0 transition-transform
-                focus:outline-none focus:ring-0
+                transition-transform hover:-translate-y-0.5 active:translate-y-0
+                no-underline decoration-transparent
+                visited:text-white hover:text-white active:text-white
+                outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0
               "
             >
               {c.label}
