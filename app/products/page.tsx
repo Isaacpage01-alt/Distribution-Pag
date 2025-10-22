@@ -1,17 +1,18 @@
-// app/products/page.tsx
 export const dynamic = "force-static";
 
-// --------- Remplace ceci par ton vrai import si tu veux ---------
-// import { products } from "@/lib/products";
-type P = {
-  id: string | number;
-  title: string;
-  image: string;
-  price: number;
-  compareAt?: number;
-  category?: string;
-  categorySlug?: string;
-};
-// Mini dataset de secours si l'import n'existe pas (évite un build cassé)
-const products: P[] = [
-  { id: 1, title: "Marteau 16
+import ProductCard from "@/components/ProductCard";
+import { products } from "@/lib/products";
+
+export default function ProductsPage() {
+  return (
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 text-white">
+      <h1 className="text-2xl font-semibold mb-6">Produits</h1>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-6">
+        {products.map((p) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
+      </div>
+    </div>
+  );
+}
