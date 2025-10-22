@@ -1,16 +1,16 @@
 "use client";
+import { useRouter } from "next/navigation";
 
-export default function BackButton({
-  className = "",
-  children = "← Retour",
-}: { className?: string; children?: React.ReactNode }) {
+export default function BackButton() {
+  const router = useRouter();
   return (
     <button
-      type="button"
-      onClick={() => history.back()}
-      className={className || "rounded-lg border border-white/20 bg-neutral-900/70 text-white px-3 py-2 text-sm hover:shadow"}
+      onClick={() => router.back()}
+      className="rounded-full border border-white/30 px-3 py-1 text-white hover:bg-white/10"
+      aria-label="Retour"
+      title="Retour"
     >
-      {children}
+      ← Retour
     </button>
   );
 }
