@@ -1,10 +1,8 @@
 "use client";
-import { useCart } from "@/context/CartContext";
+import Link from "next/link";
 import type { Product } from "@/lib/products";
 
 export default function ProductTile({ product }: { product: Product }) {
-  const { add } = useCart();
-
   return (
     <div className="w-[220px] rounded-xl border border-black bg-white/95 p-3 shadow-sm hover:shadow-md transition">
       <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
@@ -17,7 +15,7 @@ export default function ProductTile({ product }: { product: Product }) {
       </div>
 
       <div className="mt-3 space-y-1">
-        <div className="text-[12px] text-gray-600">{product.category}</div>
+        <div className="text-[12px] text-gray-700">{product.category}</div>
         <div className="text-sm font-medium text-black truncate" title={product.title}>
           {product.title}
         </div>
@@ -32,17 +30,12 @@ export default function ProductTile({ product }: { product: Product }) {
           ) : null}
         </div>
 
-        <button
-          onClick={() =>
-            add(
-              { id: product.id, title: product.title, price: product.price, image: product.image },
-              1
-            )
-          }
-          className="mt-2 h-8 w-full rounded-lg bg-cyan-400 text-black text-[12px] font-semibold hover:brightness-110"
+        <Link
+          href={`/products/${product.id}`}
+          className="mt-2 block h-8 w-full rounded-lg bg-cyan-400 text-center leading-8 text-black text-[12px] font-semibold hover:brightness-110"
         >
-          Ajouter
-        </button>
+          Choisir
+        </Link>
       </div>
     </div>
   );
