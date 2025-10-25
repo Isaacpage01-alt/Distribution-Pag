@@ -15,3 +15,15 @@
   outline: none !important;
   box-shadow: none !important;
 }
+/* Lien turquoise (normal, hover, visited, active) */
+.link-turq,
+.link-turq:visited,
+.link-turq:active,
+.link-turq:hover,
+.link-turq:focus {
+  color: #22d3ee !important; /* cyan-400 */
+  text-decoration: none;
+}
+.link-turq:hover {
+  text-decoration: underline;
+}
