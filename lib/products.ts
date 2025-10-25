@@ -1,31 +1,21 @@
 export type Product = {
   id: string;
-  slug: string;
   title: string;
-  description: string;
   price: number;
   compareAt?: number;
-  category: "outils" | "quincaillerie" | "plomberie" | "electricite" | "interieur" | "exterieur";
   image: string;
+  category: string;
+  categorySlug: string;
 };
 
 export const products: Product[] = [
-  { id: "marteau-pro", slug: "marteau-pro", title: "Marteau 16 oz", description: "Poignée anti-vibration.", price: 19.99, compareAt: 24.99, category: "outils", image: "/maretau.png" },
-  { id: "vis-8mm-100", slug: "vis-8mm-100", title: "Vis 8mm (100)", description: "Boîte de 100 vis traitées.", price: 4.00, category: "quincaillerie", image: "/maretau.png" },
-  { id: "ruban-teflon", slug: "ruban-teflon", title: "Ruban téflon 1/2\"", description: "Étanchéité raccords.", price: 1.99, category: "plomberie", image: "/file.svg" },
-  { id: "prise-15a", slug: "prise-15a", title: "Prise 15A", description: "Branchement facile.", price: 2.49, category: "electricite", image: "/globe.svg" },
-  { id: "peinture-mate", slug: "peinture-mate", title: "Peinture intérieure mate", description: "1 L — haute couvrance.", price: 18.90, category: "interieur", image: "/window.svg" },
-  { id: "rallonge-ext", slug: "rallonge-ext", title: "Rallonge extérieure 25m", description: "Résistante aux intempéries.", price: 34.90, category: "exterieur", image: "/window.svg" },
+  { id: "m01", title: "Marteau 16 oz", price: 19.99, compareAt: 23.99, image: "/maretau.png", category: "outils", categorySlug: "outils" },
+  { id: "v01", title: "Vis 8×1 (100)", price: 4.0, image: "/file.svg", category: "quincaillerie", categorySlug: "quincaillerie" },
+  { id: "p01", title: "Clé à tuyau", price: 14.5, image: "/globe.svg", category: "plomberie", categorySlug: "plomberie" },
+  { id: "e01", title: "Prise murale", price: 6.49, image: "/next.svg", category: "électricité", categorySlug: "electricite" },
+  { id: "i01", title: "Peinture intérieure", price: 29.9, compareAt: 34.9, image: "/window.svg", category: "intérieur", categorySlug: "interieur" },
+  { id: "x01", title: "Pelle extérieure", price: 24.9, image: "/vercel.svg", category: "extérieur", categorySlug: "exterieur" },
 ];
 
-export const categories = [
-  { slug: "outils", name: "Outils", count: products.filter(p=>p.category==="outils").length },
-  { slug: "quincaillerie", name: "Quincaillerie", count: products.filter(p=>p.category==="quincaillerie").length },
-  { slug: "plomberie", name: "Plomberie", count: products.filter(p=>p.category==="plomberie").length },
-  { slug: "electricite", name: "Électricité", count: products.filter(p=>p.category==="electricite").length },
-  { slug: "interieur", name: "Intérieur", count: products.filter(p=>p.category==="interieur").length },
-  { slug: "exterieur", name: "Extérieur", count: products.filter(p=>p.category==="exterieur").length },
-] as const;
-
-export const featured = products;
-export const discounted = products.filter(p => typeof p.compareAt === "number");
+export const featured = products; // démo
+export const discounted = products.filter((p) => p.compareAt && p.compareAt > p.price);
