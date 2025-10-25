@@ -36,7 +36,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12">
-      {/* Barre de recherche centrée */}
+      {/* Recherche */}
       <section className="flex justify-center">
         <form action="/products" className="w-full max-w-[420px] flex gap-2 px-4">
           <input
@@ -50,10 +50,9 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories 3 + 3 (espacées verticalement) */}
+      {/* Catégories */}
       <section className="mx-auto max-w-[1300px] px-4 pt-10 pb-20">
         <h2 className="text-lg font-semibold text-white mb-8">Catégories</h2>
-
         <div className="flex flex-col items-center gap-y-32 sm:gap-y-36 lg:gap-y-40 cat-grid">
           <div className="flex items-center justify-center gap-x-12">
             {TOP.map((c) => (
@@ -68,37 +67,31 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Populaires — 4 colonnes FORCÉES, scroll horizontal si écran trop petit */}
-      <section className="mx-auto w-full max-w-[1200px] px-4 sm:px-6">
+      {/* Populaires */}
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">Populaires</h2>
-          <Link href="/products" className="text-sm text-cyan-300 hover:underline">
+          {/* Lien turquoise + visited turquoise */}
+          <Link href="/products" className="link-turq text-sm">
             Voir tout
           </Link>
         </div>
-
-        <div className="overflow-x-auto">
-          {/* 4 colonnes fixes; min-width pour tenir 4 cartes (4×220px + gaps) */}
-          <div className="grid grid-cols-4 gap-6 justify-items-center min-w-[980px]">
-            {featured.slice(0, 12).map((p) => (
-              <ProductTile key={p.id} product={p} />
-            ))}
-          </div>
+        <div className="grid grid-cols-4 gap-6 justify-items-center min-w-[980px] overflow-x-auto lg:overflow-visible">
+          {featured.slice(0, 12).map((p) => (
+            <ProductTile key={p.id} product={p} />
+          ))}
         </div>
       </section>
 
-      {/* En rabais — 4 colonnes FORCÉES, scroll horizontal pareil */}
-      <section className="mx-auto w-full max-w-[1200px] px-4 sm:px-6">
+      {/* En rabais */}
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">En rabais</h2>
         </div>
-
-        <div className="overflow-x-auto">
-          <div className="grid grid-cols-4 gap-6 justify-items-center min-w-[980px]">
-            {discounted.slice(0, 12).map((p) => (
-              <ProductTile key={p.id} product={p} />
-            ))}
-          </div>
+        <div className="grid grid-cols-4 gap-6 justify-items-center min-w-[980px] overflow-x-auto lg:overflow-visible">
+          {discounted.slice(0, 12).map((p) => (
+            <ProductTile key={p.id} product={p} />
+          ))}
         </div>
       </section>
     </div>
