@@ -13,15 +13,14 @@ export default function Header() {
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BackButton />
-            <Link href="/" className="text-white font-semibold hover:underline">
+            {/* Lien turquoise */}
+            <Link href="/" className="link-turq font-semibold">
               Distribution Pagé
             </Link>
           </div>
 
           <nav className="flex items-center gap-6">
-            <Link href="/products" className="text-white hover:underline">
-              Produits
-            </Link>
+            {/* SUPPRIMÉ : <Link href="/products" …>Produits</Link> */}
             <button
               onClick={() => setOpen(true)}
               className="rounded-full bg-cyan-400 text-black font-semibold px-4 py-2 hover:brightness-110"
