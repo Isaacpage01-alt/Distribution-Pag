@@ -6,7 +6,7 @@ export default function ProductTile({ product }: { product: Product }) {
   const { add } = useCart();
 
   return (
-    <div className="w-full rounded-xl border border-black bg-white/95 p-3 shadow-sm hover:shadow-md transition">
+    <div className="w-full max-w-[220px] mx-auto rounded-xl border border-black bg-white/95 p-3 shadow-sm hover:shadow-md transition">
       <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
         <img
           src={product.image}
