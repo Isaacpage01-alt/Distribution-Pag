@@ -2,28 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Arrière-plan via Bg + nettoyage des focus bleus sur les pills */
-.cat-grid a {
-  color: inherit !important;
-  text-decoration: none !important;
-  outline: none !important;
-  box-shadow: none !important;
+/* =========================
+   Liens (couleur par défaut)
+   ========================= */
+/* Par défaut, les <a> gardent la couleur du contexte (évite le mauve "visited") */
+a,
+a:visited,
+a:active,
+a:hover,
+a:focus {
+  color: inherit;
+  text-decoration: none;
 }
+a:hover {
+  text-decoration: underline;
+}
+
+/* Lien turquoise foncé réutilisable (ex: "Voir tout") */
+.link-turq-dark,
+.link-turq-dark:visited,
+.link-turq-dark:active,
+.link-turq-dark:hover,
+.link-turq-dark:focus {
+  color: #0891b2 !important; /* cyan-600 */
+  text-decoration: none;
+}
+.link-turq-dark:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   Aide accessibilité & rendu
+   ========================= */
+html, body { min-height: 100%; }
+
+/* Empêche le flash bleu/purple sur le focus par défaut des liens des catégories */
+.cat-grid a,
 .cat-grid a:focus,
 .cat-grid a:focus-visible,
 .cat-grid a:active {
   outline: none !important;
   box-shadow: none !important;
 }
-/* Lien turquoise (normal, hover, visited, active) */
-.link-turq,
-.link-turq:visited,
-.link-turq:active,
-.link-turq:hover,
-.link-turq:focus {
-  color: #22d3ee !important; /* cyan-400 */
-  text-decoration: none;
+
+/* Optionnel : lissage général du texte (rend le noir plus net) */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.link-turq:hover {
-  text-decoration: underline;
-}
+
+/* Si tu veux forcer une couleur par défaut plus foncée pour
+   tous les textes dans les sections (sauf composants blancs),
+   tu peux décommenter :
+   
+   .section-dark * { color: #111827; }  // gray-900
+*/
