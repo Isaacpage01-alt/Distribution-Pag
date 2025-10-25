@@ -6,7 +6,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
 
   return (
-    <div className="w-full rounded-xl border border-black bg-white p-3 shadow-sm hover:shadow transition">
+    <div className="w-full max-w-[220px] mx-auto rounded-xl border border-black bg-white p-3 shadow-sm hover:shadow transition">
       <div className="h-36 rounded-md overflow-hidden bg-gray-100">
         <img
           src={product.image}
