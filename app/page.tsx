@@ -68,7 +68,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Populaires — 4 colonnes, cartes ~220px grâce au composant ProductTile */}
+      {/* Populaires — 4 colonnes, items centrés */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">Populaires</h2>
@@ -76,19 +76,19 @@ export default function HomePage() {
             Voir tout
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
           {featured.slice(0, 12).map((p) => (
             <ProductTile key={p.id} product={p} />
           ))}
         </div>
       </section>
 
-      {/* En rabais — 4 colonnes, mêmes cartes */}
+      {/* En rabais — 4 colonnes, items centrés */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">En rabais</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
           {discounted.slice(0, 12).map((p) => (
             <ProductTile key={p.id} product={p} />
           ))}
