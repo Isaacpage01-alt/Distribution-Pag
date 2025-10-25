@@ -1,25 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* --- Reset très strict des <a> dans la grille des catégories --- */
+
+/* Arrière-plan via Bg + nettoyage des focus bleus sur les pills */
 .cat-grid a {
   color: inherit !important;
   text-decoration: none !important;
   outline: none !important;
   box-shadow: none !important;
-  border: none !important;
-  background: transparent !important;
 }
-
-/* Désactive le contour/halo au focus */
 .cat-grid a:focus,
 .cat-grid a:focus-visible,
 .cat-grid a:active {
   outline: none !important;
   box-shadow: none !important;
-}
-
-/* Pas de violet après visite */
-.cat-grid a:visited {
-  color: inherit !important;
 }
