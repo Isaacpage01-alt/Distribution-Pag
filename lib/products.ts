@@ -15,12 +15,13 @@ export const products: Product[] = [
   // =============== OUTILS ===============
   {
     id: "out-001",
-    title: "Marteau 16 oz manche fibre",
+    title: "Marteau",
     price: 19.99,
     compareAt: 24.99,
-    image: "/vercel.svg",
+    image: "marteau.png",
     category: "outils",
     categorySlug: "outils",
+    description: marteau 16'' en acier
   },
   {
     id: "out-002",
@@ -34,7 +35,7 @@ export const products: Product[] = [
     id: "out-003",
     title: "Jeu de clés Allen (9 pcs)",
     price: 8.9,
-    image: "/window.svg",
+    image: "holland.png",
     category: "outils",
     categorySlug: "outils",
   },
