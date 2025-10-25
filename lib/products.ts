@@ -19,3 +19,27 @@ export const products: Product[] = [
 
 export const featured = products; // démo
 export const discounted = products.filter((p) => p.compareAt && p.compareAt > p.price);
+export type Product = {
+  id: string;
+  title: string;
+  image: string;
+  price: number;           // prix / unité
+  category: string;
+  categorySlug: string;
+  compareAt?: number;
+  packOptions?: number[];  // ex: [50,75,100,200]
+};
+
+export const products: Product[] = [
+  {
+    id: "vis-8x1",
+    title: "Vis 8×1 (traitée)",
+    image: "/vis.png",
+    price: 0.04, // 4 cents l’unité → pack 100 = 4.00 $
+    category: "quincaillerie",
+    categorySlug: "quincaillerie",
+    packOptions: [50, 75, 100, 200],
+  },
+  // ...
+];
+
