@@ -24,7 +24,8 @@ export default function ProductsPage({ searchParams }: Props) {
         <div className="text-sm text-gray-300">{list.length} produit(s)</div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-6 sm:gap-7">
+      {/* 4 colonnes avec petit espace */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
         {list.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
