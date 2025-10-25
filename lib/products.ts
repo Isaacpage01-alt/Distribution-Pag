@@ -18,7 +18,7 @@ export const products: Product[] = [
     title: "Marteau",
     price: 19.99,
     compareAt: 24.99,
-    image: "marteau.png",
+    image: "maretau.png",
     category: "outils",
     categorySlug: "outils",
     description: 'Marteau 16" en acier'
