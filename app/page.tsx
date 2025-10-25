@@ -13,7 +13,6 @@ export default function HomePage() {
     { label: "intérieur", slug: "interieur" },
     { label: "extérieur", slug: "exterieur" },
   ];
-
   const TOP = CAT_PILLS.slice(0, 3);
   const BOTTOM = CAT_PILLS.slice(3);
 
@@ -36,7 +35,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12">
-      {/* Barre de recherche centrée (étroite) */}
+      {/* Recherche centrée */}
       <section className="flex justify-center">
         <form action="/products" className="w-full max-w-[420px] flex gap-2 px-4">
           <input
@@ -50,10 +49,9 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* Catégories 3 + 3 (espacées verticalement) */}
+      {/* Catégories 3 + 3 espacées verticalement */}
       <section className="mx-auto max-w-[1300px] px-4 pt-10 pb-20">
         <h2 className="text-lg font-semibold text-white mb-8">Catégories</h2>
-
         <div className="flex flex-col items-center gap-y-32 sm:gap-y-36 lg:gap-y-40 cat-grid">
           <div className="flex items-center justify-center gap-x-12">
             {TOP.map((c) => (
@@ -68,7 +66,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Populaires */}
+      {/* Populaires — 4 colonnes petit gap */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">Populaires</h2>
@@ -76,20 +74,20 @@ export default function HomePage() {
             Voir tout
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-8 sm:gap-10 xl:gap-12">
-          {featured.slice(0, 10).map((p) => (
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+          {featured.slice(0, 12).map((p) => (
             <ProductTile key={p.id} product={p} />
           ))}
         </div>
       </section>
 
-      {/* En rabais */}
+      {/* En rabais — 4 colonnes petit gap */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">En rabais</h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-8 sm:gap-10 xl:gap-12">
-          {discounted.slice(0, 10).map((p) => (
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+          {discounted.slice(0, 12).map((p) => (
             <ProductTile key={p.id} product={p} />
           ))}
         </div>
