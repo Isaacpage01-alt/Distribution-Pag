@@ -21,7 +21,7 @@ export const products: Product[] = [
     image: "marteau.png",
     category: "outils",
     categorySlug: "outils",
-    description: marteau 16'' en acier
+    description: 'Marteau 16" en acier'
   },
   {
     id: "out-002",
