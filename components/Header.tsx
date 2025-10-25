@@ -14,9 +14,6 @@ export default function Header() {
           <div className="flex items-center gap-3">
             <BackButton />
             {/* Lien turquoise */}
-            <Link href="/" className="link-turq font-semibold">
-              Distribution Pagé
-            </Link>
           </div>
 
           <nav className="flex items-center gap-6">
