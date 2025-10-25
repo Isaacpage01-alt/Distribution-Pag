@@ -72,7 +72,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-base sm:text-lg font-semibold text-white">Populaires</h2>
           {/* Lien turquoise + visited turquoise */}
-          <Link href="/products" className="link-turq text-sm">
+          <Link href="/products" className="link-turq-dark text-sm">
             Voir tout
           </Link>
         </div>
