@@ -25,7 +25,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  // sécurise le chemin image (ajoute "/" si oublié) + placeholder
+  // Sécuriser le chemin d'image
   const imgSrc = (product.image || "/placeholder.png").startsWith("/")
     ? (product.image || "/placeholder.png")
     : `/${product.image}`;
@@ -34,18 +34,14 @@ export default function ProductDetailPage() {
   const total = unitPrice * qty;
 
   const addToCart = () => {
-    add(
-      { id: product.id, title: product.title, price: unitPrice, image: imgSrc },
-      qty
-    );
+    add({ id: product.id, title: product.title, price: unitPrice, image: imgSrc }, qty);
     router.push("/products");
   };
 
   return (
-    // ===== Bande blanche sur toute la largeur =====
-    <section className="w-full bg-white/95 border-y border-black/10">
+    /* ====== BANDE BLANCHE PLEINE LARGEUR ====== */
+    <section className="w-full bg-white border-y border-black/10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 text-black">
-        {/* Bouton retour */}
         <button
           onClick={() => router.back()}
           className="mb-6 rounded-full border border-black px-3 py-1 text-sm hover:bg-black hover:text-white"
@@ -53,9 +49,9 @@ export default function ProductDetailPage() {
           ← Retour
         </button>
 
-        {/* Grille: image à gauche (380px fixes), contenu à droite */}
-        <div className="grid grid-cols-1 lg:grid-cols-[380px,1fr] gap-10">
-          {/* Colonne gauche — image complètement à gauche */}
+        {/* ====== TOUJOURS 2 COLONNES (PAS DE lg:) ====== */}
+        <div className="grid grid-cols-[380px,1fr] gap-10 items-start">
+          {/* Colonne gauche : image bien à gauche */}
           <div className="flex justify-start">
             <div className="w-[380px] aspect-square rounded-lg overflow-hidden bg-gray-100 border border-black/20">
               <img
@@ -66,76 +62,15 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Colonne droite — infos */}
+          {/* Colonne droite : titre, description, prix, quantité, bouton */}
           <div className="space-y-5">
             <div>
               <h1 className="text-2xl font-semibold">{product.title}</h1>
               <div className="text-sm text-gray-700">{product.category}</div>
             </div>
 
-            {/* Description */}
             <p className="text-gray-800 leading-relaxed">
               {product.description ?? "Description à venir."}
             </p>
 
-            {/* Prix */}
-            <div className="flex items-baseline gap-3">
-              <div className="text-xl font-semibold">
-                {unitPrice.toFixed(2)} $ <span className="text-sm">/ unité</span>
-              </div>
-              {product.compareAt && product.compareAt > unitPrice && (
-                <div className="text-sm text-gray-400 line-through">
-                  {product.compareAt.toFixed(2)} $
-                </div>
-              )}
-            </div>
-
-            {/* Quantité */}
-            <div>
-              <div className="font-medium mb-2">Quantité</div>
-              <div className="inline-flex items-center gap-2">
-                <button
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="h-9 w-9 rounded-full border border-black text-lg hover:bg-black hover:text-white"
-                  aria-label="Diminuer"
-                >
-                  −
-                </button>
-                <input
-                  type="number"
-                  min={1}
-                  value={qty}
-                  onChange={(e) =>
-                    setQty(Math.max(1, Number(e.target.value) || 1))
-                  }
-                  className="h-9 w-16 rounded-lg border border-black text-center"
-                />
-                <button
-                  onClick={() => setQty((q) => q + 1)}
-                  className="h-9 w-9 rounded-full border border-black text-lg hover:bg-black hover:text-white"
-                  aria-label="Augmenter"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* Total + CTA */}
-            <div className="text-lg font-semibold">
-              Total : {total.toFixed(2)} $
-            </div>
-
-            <div className="max-w-sm">
-              <button
-                onClick={addToCart}
-                className="w-full h-11 rounded-xl bg-cyan-400 text-black font-semibold hover:brightness-110"
-              >
-                Ajouter au panier
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+            <div
