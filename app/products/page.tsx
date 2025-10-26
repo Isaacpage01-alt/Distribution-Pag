@@ -1,55 +1,44 @@
-// RENDU DYNAMIQUE pour lire searchParams (?cat=, ?q=, ?promo=)
-export const dynamic = "force-dynamic";
+// components/ProductCard.tsx
+import Link from "next/link";
+import type { Product } from "@/lib/products";
 
-import ProductCard from "@/components/ProductCard";
-import { products } from "@/lib/products";
-
-type Props = { searchParams?: { q?: string; cat?: string; promo?: string } };
-
-// petite fonction pour normaliser les slugs
-function norm(v?: string) {
-  return decodeURIComponent((v || "").toLowerCase().trim());
-}
-
-export default function ProductsPage({ searchParams }: Props) {
-  const q = norm(searchParams?.q);
-  const cat = norm(searchParams?.cat);          // ex: "outils", "quincaillerie", "electricite", "interieur", "exterieur"
-  const promo = norm(searchParams?.promo);      // "1" ou "true"
-
-  // Filtrage
-  const list = products
-    // recherche plein texte
-    .filter((p) =>
-      q ? `${p.title} ${p.category} ${p.categorySlug}`.toLowerCase().includes(q) : true
-    )
-    // filtre catégorie via categorySlug
-    .filter((p) => (cat ? p.categorySlug?.toLowerCase() === cat : true))
-    // filtre promo si demandé
-    .filter((p) => (promo ? (p.compareAt && p.compareAt > p.price) : true));
+export default function ProductCard({ product }: { product: Product }) {
+  // Accepte "maretau.png" ou "/maretau.png"
+  const imageSrc = product.image?.startsWith("/") ? product.image : `/${product.image}`;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-4 flex items-end justify-between gap-3">
-        <h1 className="text-xl font-semibold text-white">
-          {cat
-            ? `Catégorie : ${cat}`
-            : q
-            ? `Recherche : “${q}”`
-            : "Tous les produits"}
-        </h1>
-        <div className="text-sm text-gray-300">{list.length} produit(s)</div>
+    <div className="w-full max-w-[260px] bg-white rounded-xl border border-gray-200 p-4 flex flex-col">
+      <div className="w-full h-40 relative">
+        <img
+          src={imageSrc}
+          alt={product.title}
+          className="absolute inset-0 w-full h-full object-contain"
+          loading="lazy"
+        />
       </div>
 
-      {/* Grille 4 colonnes (2 mobile, 3 médium, 4 desktop) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-        {list.map((p) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
+      <h3 className="mt-3 font-semibold text-gray-900 line-clamp-2">{product.title}</h3>
+
+      <div className="mt-1 text-gray-700">
+        <span className="font-medium">
+          {new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(product.price)}
+        </span>
+        {typeof product.compareAt === "number" && product.compareAt > product.price && (
+          <span className="ml-2 text-sm text-gray-500 line-through">
+            {new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(product.compareAt)}
+          </span>
+        )}
       </div>
 
-      {list.length === 0 && (
-        <div className="mt-10 text-gray-300">Aucun produit trouvé.</div>
-      )}
+      <div className="mt-4">
+        {/* LIEN CORRECT → /products/[id] */}
+        <Link
+          href={`/products/${product.id}`}
+          className="inline-flex w-full items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 active:bg-teal-700 shadow-sm transition-colors"
+        >
+          Choisir
+        </Link>
+      </div>
     </div>
   );
 }
