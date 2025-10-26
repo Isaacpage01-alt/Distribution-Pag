@@ -1,6 +1,6 @@
 // app/products/[id]/page.tsx
-// Route dynamique: /products/:id  (on lit l'id via params.id)
-// Layout: image à gauche, texte/prix/quantité/bouton à droite, bande blanche pleine largeur.
+// Route dynamique: /products/:id  (lecture via params.id)
+// Layout: image à gauche, infos à droite sur bande blanche pleine largeur.
 
 type Product = {
   id: string;
@@ -12,7 +12,7 @@ type Product = {
   inStock?: boolean;
 };
 
-// Démo locale — remplace par ton vrai fetch si tu as une DB/API
+// 🔧 Remplace ce “catalogue” par ton fetch réel (DB/API). Il sert juste d’exemple.
 const CATALOG: Record<string, Product> = {
   "vis-traitees-8x": {
     id: "vis-traitees-8x",
@@ -43,38 +43,37 @@ const CATALOG: Record<string, Product> = {
   },
 };
 
-// Simule un fetch par id (remplace par Prisma/fetch/etc.)
 async function getProductById(id: string): Promise<Product | null> {
+  // 👉 Mets ici ton vrai fetch (Prisma/fetch/server action). Le reste du layout ne change pas.
   return CATALOG[id] ?? null;
 }
 
-export default async function Page({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function Page({ params }: { params: { id: string } }) {
   const product = await getProductById(params.id);
 
+  // En production, on peut renvoyer 404 si pas trouvé. Ici, on garde une page simple.
   if (!product) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <h1 className="text-2xl font-semibold">Produit introuvable</h1>
-        <p className="text-gray-600 mt-2">
-          Vérifie l’identifiant du produit dans l’URL: <code>/products/{'{id}'}</code>.
-        </p>
-      </div>
+      <section className="w-full bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+          <h1 className="text-2xl font-semibold">Produit introuvable</h1>
+          <p className="text-gray-600 mt-2">
+            L’ID <code>{params.id}</code> n’a pas été trouvé.
+          </p>
+        </div>
+      </section>
     );
   }
 
   return (
-    // Bande blanche pleine largeur
+    // Bande blanche pleine largeur (sur toute la page)
     <section className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-        {/* côte à côte (2 colonnes) */}
+        {/* côte à côte (2 colonnes) => texte vraiment à droite de l'image */}
         <div className="grid grid-cols-2 gap-6 sm:gap-8 items-stretch">
           {/* IMAGE GAUCHE */}
           <div className="relative h-[420px] sm:h-[520px] bg-white">
-            {/* object-contain = pas de crop ; mets object-cover si tu veux remplir */}
+            {/* object-contain = pas de crop ; object-cover si tu veux remplir */}
             <img
               src={product.imageUrl}
               alt={product.imageAlt || product.name}
@@ -91,7 +90,9 @@ export default async function Page({
               </h1>
 
               <p className="mt-2 text-base sm:text-lg md:text-xl font-medium">
-                {new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(product.price)}
+                {new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(
+                  product.price
+                )}
               </p>
 
               {product.description && (
@@ -107,7 +108,7 @@ export default async function Page({
               )}
             </div>
 
-            {/* CTA: quantité + bouton turquoise */}
+            {/* CTA: quantité + bouton turquoise (à droite) */}
             <form action="#" className="mt-6 flex items-center gap-3 sm:gap-4">
               <label htmlFor="qty" className="text-sm font-medium text-gray-700">
                 Quantité
