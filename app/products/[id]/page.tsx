@@ -11,9 +11,37 @@ function findById(id: string) {
   return products.find((p) => p?.id === id) ?? null;
 }
 
+// --- Panier minimal côté client (localStorage) ---
+function addToCartClient(item: {
+  id: string;
+  title: string;
+  price: number;
+  image: string;
+  qty: number;
+}) {
+  try {
+    const KEY = "dp_cart";
+    const raw = localStorage.getItem(KEY);
+    const cart: any[] = raw ? JSON.parse(raw) : [];
+    const i = cart.findIndex((x) => x.id === item.id);
+    if (i >= 0) {
+      cart[i].qty = Math.min(999, (cart[i].qty || 0) + item.qty);
+    } else {
+      cart.push(item);
+    }
+    localStorage.setItem(KEY, JSON.stringify(cart));
+    // Optionnel: avertir d'autres composants
+    window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function Page({ params }: { params: { id: string } }) {
   const product = findById(params.id);
   const [qty, setQty] = useState<number>(1);
+  const [ok, setOk] = useState<null | "ok" | "err">(null);
 
   if (!product) {
     return (
@@ -26,8 +54,25 @@ export default function Page({ params }: { params: { id: string } }) {
     );
   }
 
+  // accepte "maretau.png" ou "/maretau.png"
   const img = product.image?.startsWith("/") ? product.image : `/${product.image}`;
-  const total = useMemo(() => Math.max(1, Math.min(999, Number(qty) || 1)) * product.price, [qty, product.price]);
+  const total = useMemo(
+    () => Math.max(1, Math.min(999, Number(qty) || 1)) * product.price,
+    [qty, product.price]
+  );
+
+  const handleAdd = () => {
+    const success = addToCartClient({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: img,
+      qty: Math.max(1, Math.min(999, Number(qty) || 1)),
+    });
+    setOk(success ? "ok" : "err");
+    // petit reset visuel du message
+    setTimeout(() => setOk(null), 1800);
+  };
 
   return (
     // Bande blanche derrière toute la section
@@ -47,11 +92,17 @@ export default function Page({ params }: { params: { id: string } }) {
             <img
               src={img}
               alt={product.title}
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+              }}
             />
           </div>
 
-          {/* Panneau blanc pour TOUT le texte (forcé en blanc) */}
+          {/* Panneau blanc pour tout le texte */}
           <div
             style={{
               background: "#ffffff",
@@ -65,7 +116,6 @@ export default function Page({ params }: { params: { id: string } }) {
               boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
             }}
           >
-            {/* Titre + prix */}
             <div>
               <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.2 }}>{product.title}</h1>
 
@@ -91,7 +141,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 </p>
               )}
 
-              {/* Ligne 1 : Quantité (placée juste sous le prix) */}
+              {/* LIGNE 1 : Quantité */}
               <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 12 }}>
                 <label htmlFor="qty" style={{ fontSize: 14, fontWeight: 500, color: "#374151" }}>
                   Quantité
@@ -120,22 +170,21 @@ export default function Page({ params }: { params: { id: string } }) {
                 />
               </div>
 
-              {/* Espace clair entre quantité et total */}
+              {/* ESPACE visible */}
               <div style={{ height: 12 }} />
 
-              {/* Ligne 2 : Total */}
+              {/* LIGNE 2 : Total */}
               <div style={{ fontSize: 18, fontWeight: 600, color: "#111827" }}>
                 Total : <span>{money(total)}</span>
               </div>
 
-              {/* Espace clair entre total et bouton */}
+              {/* ESPACE visible */}
               <div style={{ height: 12 }} />
 
-              {/* Ligne 3 : Bouton turquoise, moins large, plus haut */}
+              {/* LIGNE 3 : Bouton turquoise (moins large, plus haut) */}
               <button
                 type="button"
-                onClick={() => console.log("Ajouter au panier:", product.id, qty)}
-                // On FORCE turquoise et le style bouton (si ton CSS global écrase Tailwind)
+                onClick={handleAdd}
                 style={{
                   appearance: "none",
                   WebkitAppearance: "none",
@@ -153,14 +202,25 @@ export default function Page({ params }: { params: { id: string } }) {
                   cursor: "pointer",
                   boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
                 }}
-                onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = "#0d9488"))}  // teal-600
-                onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = "#14b8a6"))}   // teal-500
+                onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = "#0d9488"))} // teal-600
+                onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = "#14b8a6"))} // teal-500
               >
                 Ajouter au panier
               </button>
+
+              {/* mini feedback */}
+              {ok === "ok" && (
+                <div style={{ marginTop: 10, fontSize: 14, color: "#047857", fontWeight: 600 }}>
+                  Ajouté au panier ✅
+                </div>
+              )}
+              {ok === "err" && (
+                <div style={{ marginTop: 10, fontSize: 14, color: "#dc2626", fontWeight: 600 }}>
+                  Oups — impossible d’ajouter. Réessaie.
+                </div>
+              )}
             </div>
 
-            {/* Stock (facultatif) */}
             {"inStock" in product &&
               ((product as any).inStock === false ? (
                 <p style={{ marginTop: 16, fontSize: 14, color: "#dc2626" }}>Rupture de stock</p>
