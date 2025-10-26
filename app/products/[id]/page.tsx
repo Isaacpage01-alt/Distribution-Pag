@@ -25,7 +25,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  // -- Chemin image sécurisé : si pas de "/" on l'ajoute.
+  // sécurise le chemin image (ajoute "/" si oublié) + placeholder
   const imgSrc = (product.image || "/placeholder.png").startsWith("/")
     ? (product.image || "/placeholder.png")
     : `/${product.image}`;
@@ -35,54 +35,53 @@ export default function ProductDetailPage() {
 
   const addToCart = () => {
     add(
-      {
-        id: product.id,
-        title: product.title,
-        price: unitPrice,
-        image: imgSrc,
-      },
+      { id: product.id, title: product.title, price: unitPrice, image: imgSrc },
       qty
     );
     router.push("/products");
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 text-black">
-      {/* Grille: colonne gauche fixe (320px), droite fluide */}
-      <div className="grid grid-cols-1 lg:grid-cols-[320px,1fr] gap-8">
-        {/* Colonne gauche : image plus petite */}
-        <div className="rounded-xl border border-black/30 bg-white/95 p-4 flex items-center justify-center">
-          <div className="w-full max-w-[300px] aspect-square rounded-lg overflow-hidden bg-gray-100">
-            <img
-              src={imgSrc}
-              alt={product.title}
-              className="w-full h-full object-contain"
-            />
+    // ===== Bande blanche sur toute la largeur =====
+    <section className="w-full bg-white/95 border-y border-black/10">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 text-black">
+        {/* Bouton retour */}
+        <button
+          onClick={() => router.back()}
+          className="mb-6 rounded-full border border-black px-3 py-1 text-sm hover:bg-black hover:text-white"
+        >
+          ← Retour
+        </button>
+
+        {/* Grille: image à gauche (380px fixes), contenu à droite */}
+        <div className="grid grid-cols-1 lg:grid-cols-[380px,1fr] gap-10">
+          {/* Colonne gauche — image complètement à gauche */}
+          <div className="flex justify-start">
+            <div className="w-[380px] aspect-square rounded-lg overflow-hidden bg-gray-100 border border-black/20">
+              <img
+                src={imgSrc}
+                alt={product.title}
+                className="w-full h-full object-contain"
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Colonne droite : infos */}
-        <div className="space-y-5">
-          <button
-            onClick={() => router.back()}
-            className="rounded-full border border-black px-3 py-1 text-sm hover:bg-black hover:text-white"
-          >
-            ← Retour
-          </button>
-
-          <h1 className="text-2xl font-semibold">{product.title}</h1>
-          <div className="text-sm text-gray-700">{product.category}</div>
-
-          <div className="rounded-xl border border-black/30 bg-white/95 p-4 space-y-5">
-            {/* Description */}
-            <div className="text-gray-800 leading-relaxed">
-              {product.description ?? "Description à venir."}
+          {/* Colonne droite — infos */}
+          <div className="space-y-5">
+            <div>
+              <h1 className="text-2xl font-semibold">{product.title}</h1>
+              <div className="text-sm text-gray-700">{product.category}</div>
             </div>
 
+            {/* Description */}
+            <p className="text-gray-800 leading-relaxed">
+              {product.description ?? "Description à venir."}
+            </p>
+
             {/* Prix */}
-            <div className="flex items-center gap-4">
-              <div className="text-lg font-semibold">
-                {unitPrice.toFixed(2)} $ / unité
+            <div className="flex items-baseline gap-3">
+              <div className="text-xl font-semibold">
+                {unitPrice.toFixed(2)} $ <span className="text-sm">/ unité</span>
               </div>
               {product.compareAt && product.compareAt > unitPrice && (
                 <div className="text-sm text-gray-400 line-through">
@@ -125,15 +124,18 @@ export default function ProductDetailPage() {
             <div className="text-lg font-semibold">
               Total : {total.toFixed(2)} $
             </div>
-            <button
-              onClick={addToCart}
-              className="w-full h-11 rounded-xl bg-cyan-400 text-black font-semibold hover:brightness-110"
-            >
-              Ajouter au panier
-            </button>
+
+            <div className="max-w-sm">
+              <button
+                onClick={addToCart}
+                className="w-full h-11 rounded-xl bg-cyan-400 text-black font-semibold hover:brightness-110"
+              >
+                Ajouter au panier
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
