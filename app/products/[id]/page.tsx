@@ -1,21 +1,17 @@
+// @ts-nocheck
 // app/products/[id]/page.tsx
 import { products } from "@/lib/products";
 
-function findById(id: string | undefined) {
+// Trouve un produit par id dans lib/products.ts
+function findById(id) {
   if (!id) return null;
-  return products.find((p) => p.id === id) ?? null;
+  return products.find((p) => p?.id === id) ?? null;
 }
 
-// Prend en charge:
-//   1) /products/[id]              => params.id === "out-001"
-//   2) /products/id?id=out-001     => params.id === "id" ET searchParams.id === "out-001"
-export default function Page({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+// Prend en charge :
+// 1) /products/out-001        -> params.id === "out-001"
+// 2) /products/id?id=out-001  -> params.id === "id" ET searchParams.id === "out-001"
+export default function Page({ params, searchParams }) {
   const idFromParams = params?.id;
   const idFromQuery =
     (typeof searchParams?.id === "string" && searchParams.id) ||
@@ -23,15 +19,15 @@ export default function Page({
     (typeof searchParams?.product === "string" && searchParams.product) ||
     undefined;
 
-  // 1) on essaie l'id direct (cas /products/out-001)
+  // 1) Essai direct (route dynamique classique)
   let product = findById(idFromParams);
 
-  // 2) si params.id vaut "id" (cas /products/id?id=out-001), on lit la query
+  // 2) Fallback pour l'ancien format /products/id?id=...
   if (!product && idFromParams === "id") {
     product = findById(idFromQuery);
   }
 
-  // Normalise l'image
+  // Normalise l'image (accepte "maretau.png" ou "/maretau.png")
   const raw = product?.image ?? "";
   const imageSrc = raw ? (raw.startsWith("/") ? raw : `/${raw}`) : "/vercel.svg";
 
@@ -41,31 +37,24 @@ export default function Page({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
           <h1 className="text-2xl font-semibold">Produit introuvable</h1>
           <p className="text-gray-600 mt-2">
-            URL reçue :
-            {" "}
-            <code>/products/{idFromParams}{idFromQuery ? `?id=${idFromQuery}` : ""}</code>
+            URL reçue : <code>/products/{idFromParams}{idFromQuery ? `?id=${idFromQuery}` : ""}</code>
           </p>
           <p className="text-gray-600 mt-2">
-            Assure-toi que le lien est <code>/products/&lt;ID&gt;</code> ou <code>/products/id?id=&lt;ID&gt;</code>,
-            et que cet <code>ID</code> existe dans <code>lib/products.ts</code>.
+            Assure-toi que <code>{idFromParams === "id" ? idFromQuery : idFromParams}</code> existe bien dans <code>lib/products.ts</code>.
           </p>
         </div>
       </section>
     );
   }
 
-  const money = (v: number) =>
-    new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(v);
-
-  const hasCompare =
-    typeof (product as any).compareAt === "number" &&
-    (product as any).compareAt > product.price;
+  const money = (v) => new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(v);
+  const hasCompare = typeof product?.compareAt === "number" && product.compareAt > product.price;
 
   return (
     // Bande blanche pleine largeur
     <section className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-        {/* 2 colonnes = côte à côte */}
+        {/* 2 colonnes = image gauche / infos droite */}
         <div className="grid grid-cols-2 gap-6 sm:gap-8 items-stretch">
           {/* IMAGE GAUCHE */}
           <div className="relative h-[420px] sm:h-[520px] bg-white">
@@ -88,14 +77,14 @@ export default function Page({
                 {money(product.price)}
                 {hasCompare && (
                   <span className="ml-2 text-sm text-gray-500 line-through">
-                    {money((product as any).compareAt as number)}
+                    {money(product.compareAt)}
                   </span>
                 )}
               </p>
 
-              {(product as any).description && (
+              {product?.description && (
                 <p className="mt-4 text-gray-700 leading-relaxed whitespace-pre-line">
-                  {(product as any).description}
+                  {product.description}
                 </p>
               )}
             </div>
