@@ -1,4 +1,7 @@
-// app/products/[id]/page.tsx
+// app/products/id/page.tsx
+// Route fixe: /products/id  (on lit l'id dans la query:  /products/id?id=xxx )
+// Mise en page: image à gauche, texte/prix/quantité/bouton à droite, bande blanche pleine largeur.
+
 type Product = {
   id: string;
   name: string;
@@ -9,7 +12,7 @@ type Product = {
   inStock?: boolean;
 };
 
-// Simule un “catalogue” pour la démo — remplace par ton fetch réel
+// Petit catalogue de démo (remplace par ton fetch si tu en as un)
 const CATALOG: Record<string, Product> = {
   "vis-traitees-8x": {
     id: "vis-traitees-8x",
@@ -40,24 +43,56 @@ const CATALOG: Record<string, Product> = {
   },
 };
 
-async function getProductById(id: string): Promise<Product | null> {
-  return CATALOG[id] ?? null; // remplace par DB/API au besoin
-}
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  // On accepte ?id=, ?sku= ou ?product=
+  const pid =
+    (typeof searchParams.id === "string" && searchParams.id) ||
+    (typeof searchParams.sku === "string" && searchParams.sku) ||
+    (typeof searchParams.product === "string" && searchParams.product) ||
+    "";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const product = await getProductById(params.id);
+  // 1) Si l'id existe dans le petit catalogue local
+  let product = pid ? CATALOG[pid] : undefined;
+
+  // 2) Sinon, on tente de reconstruire depuis la query (pour éviter “introuvable”)
+  if (!product) {
+    const name = typeof searchParams.name === "string" ? searchParams.name : undefined;
+    const price = typeof searchParams.price === "string" ? Number(searchParams.price) : undefined;
+    const imageUrl = typeof searchParams.imageUrl === "string" ? searchParams.imageUrl : undefined;
+    if (name && price && imageUrl) {
+      product = {
+        id: pid || "custom",
+        name,
+        price: isNaN(price) ? 0 : price,
+        description:
+          typeof searchParams.description === "string" ? searchParams.description : undefined,
+        imageUrl,
+        imageAlt: typeof searchParams.imageAlt === "string" ? searchParams.imageAlt : name,
+        inStock: true,
+      };
+    }
+  }
 
   if (!product) {
+    // On n’affiche plus “Produit introuvable” par défaut pour éviter le blocage
+    // mais on donne un message clair et un lien de retour.
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
-        <h1 className="text-2xl font-semibold">Produit introuvable</h1>
-        <p className="text-gray-600 mt-2">Vérifie l’identifiant du produit.</p>
+        <h1 className="text-2xl font-semibold">Aucun produit sélectionné</h1>
+        <p className="text-gray-600 mt-2">
+          Ouvre cette page avec un lien de type <code>/products/id?id=VOTRE_ID</code> ou passe
+          <code> ?name=&price=&imageUrl=</code> dans l’URL.
+        </p>
       </div>
     );
   }
 
   return (
-    // Bande blanche PLEINE largeur
+    // Bande blanche pleine largeur
     <section className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-10">
         {/* 2 colonnes dès mobile pour forcer “à côté” */}
@@ -81,7 +116,9 @@ export default async function Page({ params }: { params: { id: string } }) {
               </h1>
 
               <p className="mt-2 text-base sm:text-lg md:text-xl font-medium">
-                {new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(product.price)}
+                {new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(
+                  product.price
+                )}
               </p>
 
               {product.description && (
