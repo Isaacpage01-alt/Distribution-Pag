@@ -26,7 +26,7 @@ export default function Page({ params }: { params: { id: string } }) {
     );
   }
 
-  // Accepte "maretau.png" ou "/maretau.png"
+  // Chemin image: accepte "maretau.png" ou "/maretau.png"
   const img = product.image?.startsWith("/") ? product.image : `/${product.image}`;
 
   const total = useMemo(() => {
@@ -35,12 +35,12 @@ export default function Page({ params }: { params: { id: string } }) {
   }, [qty, product.price]);
 
   return (
-    // BANDE BLANCHE DE FOND (pleine largeur)
+    // Fond de page blanc + contenu centré
     <section className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-        {/* 2 colonnes côte à côte */}
+        {/* 2 colonnes côte à côte (hauteurs égales) */}
         <div className="grid grid-cols-2 gap-6 sm:gap-8 items-stretch">
-          {/* IMAGE GAUCHE (hauteur fixe) */}
+          {/* IMAGE GAUCHE */}
           <div className="relative h-[420px] sm:h-[520px] bg-white">
             <img
               src={img}
@@ -50,9 +50,8 @@ export default function Page({ params }: { params: { id: string } }) {
             />
           </div>
 
-          {/* CARTE BLANCHE À DROITE (bande/carré blanc) */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-7 md:p-10 shadow-sm flex flex-col">
-            {/* Titre + prix */}
+          {/* TOUTE LA ZONE DE TEXTE SUR BANDE/CARRÉ BLANC */}
+          <div className="bg-white p-6 md:p-10 flex flex-col justify-between">
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
                 {product.title}
@@ -71,7 +70,6 @@ export default function Page({ params }: { params: { id: string } }) {
                   )}
               </div>
 
-              {/* Description (facultatif) */}
               {"description" in product && (product as any).description ? (
                 <p className="mt-4 text-gray-700 leading-relaxed whitespace-pre-line">
                   {(product as any).description}
@@ -101,16 +99,16 @@ export default function Page({ params }: { params: { id: string } }) {
                 />
               </div>
 
-              {/* MONTANT TOTAL sous la quantité */}
-              <div className="mt-3 text-base sm:text-lg font-medium text-gray-900">
+              {/* ESPACE entre quantité et total */}
+              <div className="mt-4 text-base sm:text-lg font-medium text-gray-900">
                 Total : <span>{money(total)}</span>
               </div>
 
-              {/* GROS BOUTON TURQUOISE sous le total */}
+              {/* Bouton MOINS LARGE, PLUS HAUT, TURQUOISE */}
               <div className="mt-5">
                 <button
                   type="button"
-                  className="w-full inline-flex items-center justify-center rounded-xl px-6 py-4 text-base md:text-lg font-semibold text-white bg-teal-500 hover:bg-teal-600 active:bg-teal-700 shadow-md transition-colors"
+                  className="inline-flex items-center justify-center rounded-xl px-8 py-5 text-base md:text-lg font-semibold text-white bg-teal-500 hover:bg-teal-600 active:bg-teal-700 shadow-md transition-colors"
                   onClick={() => {
                     // branche ici ton ajout au panier
                     console.log("Ajouter au panier:", product.id, qty);
@@ -121,7 +119,6 @@ export default function Page({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            {/* Petit indicateur stock (optionnel) */}
             {"inStock" in product ? (
               (product as any).inStock === false ? (
                 <p className="mt-4 text-sm text-red-600">Rupture de stock</p>
