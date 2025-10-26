@@ -1,71 +1,137 @@
-// @ts-nocheck
-// app/products/[id]/page.tsx
+"use client";
+
+import { useParams, useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { products } from "@/lib/products";
+import { useCart } from "@/context/CartContext";
 
-function find(id) {
-  return id ? products.find((p) => p?.id === id) ?? null : null;
-}
+export default function ProductDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const { add } = useCart();
 
-export default function Page({ params, searchParams }) {
-  const idFromParams = params?.id;             // /products/out-001  -> "out-001"
-  const idFromQuery =
-    (typeof searchParams?.id === "string" && searchParams.id) ||
-    (typeof searchParams?.sku === "string" && searchParams.sku) ||
-    (typeof searchParams?.product === "string" && searchParams.product) ||
-    undefined;
+  const product = useMemo(
+    () => products.find((p) => String(p.id) === String(id)),
+    [id]
+  );
 
-  // 1) format normal /products/[id]
-  let product = find(idFromParams);
-  // 2) compat /products/id?id=xxx
-  if (!product && idFromParams === "id") product = find(idFromQuery);
+  const [qty, setQty] = useState<number>(1);
 
   if (!product) {
     return (
-      <section className="w-full bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <h1 className="text-2xl font-semibold">Produit introuvable</h1>
-          <p className="text-gray-600 mt-2">
-            URL : <code>/products/{idFromParams}{idFromQuery ? `?id=${idFromQuery}` : ""}</code>
-          </p>
-          <p className="text-gray-600">Vérifie que l’ID existe dans <code>lib/products.ts</code>.</p>
-        </div>
-      </section>
+      <div className="mx-auto max-w-3xl px-4 py-12 text-black">
+        Produit introuvable.
+      </div>
     );
   }
 
-  const img = product.image ? (product.image.startsWith("/") ? product.image : `/${product.image}`) : "/vercel.svg";
-  const money = (v) => new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(v);
-  const hasCompare = typeof product.compareAt === "number" && product.compareAt > product.price;
+  // Sécurise le chemin image (si "marteau.png" -> "/marteau.png")
+  const imgSrc = (product.image || "/placeholder.png").startsWith("/")
+    ? (product.image || "/placeholder.png")
+    : `/${product.image}`;
+
+  const unitPrice = Number(product.price) || 0;
+  const total = unitPrice * qty;
+
+  const addToCart = () => {
+    add(
+      { id: product.id, title: product.title, price: unitPrice, image: imgSrc },
+      qty
+    );
+    router.push("/products");
+  };
 
   return (
-    <section className="w-full bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-        <div className="grid grid-cols-2 gap-6 sm:gap-8 items-stretch">
-          <div className="relative h-[420px] sm:h-[520px] bg-white">
-            <img src={img} alt={product.title} className="absolute inset-0 h-full w-full object-contain" />
+    /* ====== BANDE BLANCHE PLEINE LARGEUR ====== */
+    <section className="w-full bg-white border-y border-black/10">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 text-black">
+        <button
+          onClick={() => router.back()}
+          className="mb-6 rounded-full border border-black px-3 py-1 text-sm hover:bg-black hover:text-white"
+        >
+          ← Retour
+        </button>
+
+        {/* ====== TOUJOURS 2 COLONNES (image à gauche, contenu à droite) ====== */}
+        <div className="grid grid-cols-[380px,1fr] gap-10 items-start">
+          {/* Colonne gauche : image */}
+          <div className="flex justify-start">
+            <div className="w-[380px] aspect-square rounded-lg overflow-hidden bg-gray-100 border border-black/20">
+              <img
+                src={imgSrc}
+                alt={product.title}
+                className="w-full h-full object-contain"
+              />
+            </div>
           </div>
 
-          <div className="bg-white border-l border-gray-200 p-4 sm:p-6 md:p-10 flex flex-col justify-between">
+          {/* Colonne droite : infos + quantité + bouton */}
+          <div className="space-y-5">
             <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">{product.title}</h1>
-              <p className="mt-2 text-base sm:text-lg md:text-xl font-medium">
-                {money(product.price)}
-                {hasCompare && <span className="ml-2 text-sm text-gray-500 line-through">{money(product.compareAt)}</span>}
-              </p>
-              {product.description && (
-                <p className="mt-4 text-gray-700 leading-relaxed whitespace-pre-line">{product.description}</p>
+              <h1 className="text-2xl font-semibold">{product.title}</h1>
+              <div className="text-sm text-gray-700">{product.category}</div>
+            </div>
+
+            {/* Description */}
+            <p className="text-gray-800 leading-relaxed">
+              {product.description ?? "Description à venir."}
+            </p>
+
+            {/* Prix */}
+            <div className="flex items-baseline gap-3">
+              <div className="text-xl font-semibold">
+                {unitPrice.toFixed(2)} $ <span className="text-sm">/ unité</span>
+              </div>
+              {product.compareAt && product.compareAt > unitPrice && (
+                <div className="text-sm text-gray-400 line-through">
+                  {product.compareAt.toFixed(2)} $
+                </div>
               )}
             </div>
 
-            <form action="#" className="mt-6 flex items-center gap-3 sm:gap-4">
-              <label htmlFor="qty" className="text-sm font-medium text-gray-700">Quantité</label>
-              <input id="qty" name="qty" type="number" min={1} max={999} defaultValue={1}
-                     className="w-20 rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
-              <button type="submit"
-                      className="ml-auto inline-flex items-center justify-center rounded-xl px-5 py-3 text-base font-medium text-white bg-teal-500 hover:bg-teal-600">
+            {/* Quantité */}
+            <div>
+              <div className="font-medium mb-2">Quantité</div>
+              <div className="inline-flex items-center gap-2">
+                <button
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="h-9 w-9 rounded-full border border-black text-lg hover:bg-black hover:text-white"
+                  aria-label="Diminuer"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  value={qty}
+                  onChange={(e) =>
+                    setQty(Math.max(1, Number(e.target.value) || 1))
+                  }
+                  className="h-9 w-16 rounded-lg border border-black text-center"
+                />
+                <button
+                  onClick={() => setQty((q) => q + 1)}
+                  className="h-9 w-9 rounded-full border border-black text-lg hover:bg-black hover:text-white"
+                  aria-label="Augmenter"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Total + CTA */}
+            <div className="text-lg font-semibold">
+              Total : {total.toFixed(2)} $
+            </div>
+
+            <div className="max-w-sm">
+              <button
+                onClick={addToCart}
+                className="w-full h-11 rounded-xl bg-cyan-400 text-black font-semibold hover:brightness-110"
+              >
                 Ajouter au panier
               </button>
-            </form>
+            </div>
           </div>
         </div>
       </div>
