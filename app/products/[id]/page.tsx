@@ -1,6 +1,6 @@
-// app/products/id/page.tsx
-// Route fixe: /products/id  (on lit l'id dans la query:  /products/id?id=xxx )
-// Mise en page: image à gauche, texte/prix/quantité/bouton à droite, bande blanche pleine largeur.
+// app/products/[id]/page.tsx
+// Route dynamique: /products/:id  (on lit l'id via params.id)
+// Layout: image à gauche, texte/prix/quantité/bouton à droite, bande blanche pleine largeur.
 
 type Product = {
   id: string;
@@ -12,7 +12,7 @@ type Product = {
   inStock?: boolean;
 };
 
-// Petit catalogue de démo (remplace par ton fetch si tu en as un)
+// Démo locale — remplace par ton vrai fetch si tu as une DB/API
 const CATALOG: Record<string, Product> = {
   "vis-traitees-8x": {
     id: "vis-traitees-8x",
@@ -43,49 +43,24 @@ const CATALOG: Record<string, Product> = {
   },
 };
 
-export default function Page({
-  searchParams,
+// Simule un fetch par id (remplace par Prisma/fetch/etc.)
+async function getProductById(id: string): Promise<Product | null> {
+  return CATALOG[id] ?? null;
+}
+
+export default async function Page({
+  params,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: { id: string };
 }) {
-  // On accepte ?id=, ?sku= ou ?product=
-  const pid =
-    (typeof searchParams.id === "string" && searchParams.id) ||
-    (typeof searchParams.sku === "string" && searchParams.sku) ||
-    (typeof searchParams.product === "string" && searchParams.product) ||
-    "";
-
-  // 1) Si l'id existe dans le petit catalogue local
-  let product = pid ? CATALOG[pid] : undefined;
-
-  // 2) Sinon, on tente de reconstruire depuis la query (pour éviter “introuvable”)
-  if (!product) {
-    const name = typeof searchParams.name === "string" ? searchParams.name : undefined;
-    const price = typeof searchParams.price === "string" ? Number(searchParams.price) : undefined;
-    const imageUrl = typeof searchParams.imageUrl === "string" ? searchParams.imageUrl : undefined;
-    if (name && price && imageUrl) {
-      product = {
-        id: pid || "custom",
-        name,
-        price: isNaN(price) ? 0 : price,
-        description:
-          typeof searchParams.description === "string" ? searchParams.description : undefined,
-        imageUrl,
-        imageAlt: typeof searchParams.imageAlt === "string" ? searchParams.imageAlt : name,
-        inStock: true,
-      };
-    }
-  }
+  const product = await getProductById(params.id);
 
   if (!product) {
-    // On n’affiche plus “Produit introuvable” par défaut pour éviter le blocage
-    // mais on donne un message clair et un lien de retour.
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
-        <h1 className="text-2xl font-semibold">Aucun produit sélectionné</h1>
+        <h1 className="text-2xl font-semibold">Produit introuvable</h1>
         <p className="text-gray-600 mt-2">
-          Ouvre cette page avec un lien de type <code>/products/id?id=VOTRE_ID</code> ou passe
-          <code> ?name=&price=&imageUrl=</code> dans l’URL.
+          Vérifie l’identifiant du produit dans l’URL: <code>/products/{'{id}'}</code>.
         </p>
       </div>
     );
@@ -95,7 +70,7 @@ export default function Page({
     // Bande blanche pleine largeur
     <section className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-        {/* 2 colonnes dès mobile pour forcer “à côté” */}
+        {/* côte à côte (2 colonnes) */}
         <div className="grid grid-cols-2 gap-6 sm:gap-8 items-stretch">
           {/* IMAGE GAUCHE */}
           <div className="relative h-[420px] sm:h-[520px] bg-white">
@@ -108,7 +83,7 @@ export default function Page({
             />
           </div>
 
-          {/* DETAILS DROITE — même hauteur que l'image grâce à items-stretch */}
+          {/* DÉTAILS DROITE — même hauteur que l'image */}
           <div className="bg-white border-l border-gray-200 p-4 sm:p-6 md:p-10 flex flex-col justify-between">
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight">
@@ -116,9 +91,7 @@ export default function Page({
               </h1>
 
               <p className="mt-2 text-base sm:text-lg md:text-xl font-medium">
-                {new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(
-                  product.price
-                )}
+                {new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(product.price)}
               </p>
 
               {product.description && (
@@ -134,7 +107,7 @@ export default function Page({
               )}
             </div>
 
-            {/* CTA: quantité + bouton turquoise à DROITE */}
+            {/* CTA: quantité + bouton turquoise */}
             <form action="#" className="mt-6 flex items-center gap-3 sm:gap-4">
               <label htmlFor="qty" className="text-sm font-medium text-gray-700">
                 Quantité
