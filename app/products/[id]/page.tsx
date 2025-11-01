@@ -12,14 +12,7 @@ function findById(id: string) {
   return products.find((p) => p?.id === id) ?? null;
 }
 
-type CartItem = {
-  id: string;
-  title: string;
-  price: number;
-  image: string;
-  qty: number;
-};
-
+type CartItem = { id: string; title: string; price: number; image: string; qty: number };
 const CART_KEY = "dp_cart";
 
 function readCart(): CartItem[] {
@@ -31,27 +24,20 @@ function readCart(): CartItem[] {
     return [];
   }
 }
-
 function writeCart(next: CartItem[]) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(CART_KEY, JSON.stringify(next));
   window.dispatchEvent(new CustomEvent("cart:updated", { detail: next }));
 }
-
 function addToCart(item: CartItem) {
   const cart = readCart();
   const i = cart.findIndex((x) => x && x.id === item.id);
-  if (i >= 0) {
-    cart[i].qty = Math.min(999, Number(cart[i].qty || 0) + item.qty);
-  } else {
-    cart.push(item);
-  }
+  if (i >= 0) cart[i].qty = Math.min(999, Number(cart[i].qty || 0) + item.qty);
+  else cart.push(item);
   writeCart(cart);
 }
-
 function removeFromCart(id: string) {
-  const cart = readCart().filter((x) => x.id !== id);
-  writeCart(cart);
+  writeCart(readCart().filter((x) => x.id !== id));
 }
 
 // ---------- Panier latéral (drawer) ----------
@@ -59,24 +45,46 @@ function CartDrawer() {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
 
+  // 🧽 Cache tout bouton "Panier" blanc (pas le nôtre)
   useEffect(() => {
-    // charge au montage
-    setCart(readCart());
-    // écoute les mises à jour
-    const onUpdate = (e: any) => setCart(e.detail ?? readCart());
-    window.addEventListener("cart:updated", onUpdate as any);
-    return () => window.removeEventListener("cart:updated", onUpdate as any);
+    const cleanup: Array<HTMLElement> = [];
+    const buttons = Array.from(document.querySelectorAll("button")) as HTMLButtonElement[];
+    buttons.forEach((b) => {
+      const label = (b.textContent || "").trim().toLowerCase();
+      if (b.id === "dp-cart-trigger") return; // garder notre bouton turquoise
+      if (label.startsWith("panier")) {
+        const prevDisplay = b.style.display;
+        b.style.display = "none";
+        (b as any).__prevDisplay = prevDisplay;
+        cleanup.push(b);
+      }
+    });
+    return () => {
+      cleanup.forEach((b: any) => {
+        b.style.display = b.__prevDisplay ?? "";
+      });
+    };
   }, []);
 
-  const total = useMemo(
-    () => cart.reduce((acc, it) => acc + it.price * it.qty, 0),
-    [cart]
-  );
+  useEffect(() => {
+    setCart(readCart());
+    const onUpdate = (e: any) => setCart(e.detail ?? readCart());
+    const onOpen = () => setOpen(true);
+    window.addEventListener("cart:updated", onUpdate as any);
+    window.addEventListener("cart:open", onOpen as any);
+    return () => {
+      window.removeEventListener("cart:updated", onUpdate as any);
+      window.removeEventListener("cart:open", onOpen as any);
+    };
+  }, []);
+
+  const total = useMemo(() => cart.reduce((acc, it) => acc + it.price * it.qty, 0), [cart]);
 
   return (
     <>
-      {/* Bouton pour ouvrir */}
+      {/* Bouton turquoise pour ouvrir */}
       <button
+        id="dp-cart-trigger"
         type="button"
         onClick={() => setOpen(true)}
         style={{
@@ -264,15 +272,16 @@ export default function Page({ params }: { params: { id: string } }) {
       image: img,
       qty: Math.max(1, Math.min(999, Number(qty) || 1)),
     });
+    // Ouvre le tiroir après l’ajout
+    window.dispatchEvent(new Event("cart:open"));
   };
 
   return (
     <section style={{ background: "#ffffff" }}>
-      {/* Panier latéral (reste présent sur la page et s’actualise en direct) */}
+      {/* Tiroir panier (avec bouton turquoise; les autres "Panier" blancs sont masqués) */}
       <CartDrawer />
 
       <div style={{ maxWidth: 1120, margin: "0 auto", padding: "40px 24px" }}>
-        {/* 2 colonnes */}
         <div
           style={{
             display: "grid",
@@ -281,22 +290,16 @@ export default function Page({ params }: { params: { id: string } }) {
             alignItems: "stretch",
           }}
         >
-          {/* IMAGE GAUCHE */}
+          {/* IMAGE */}
           <div style={{ position: "relative", height: 520, background: "#fff" }}>
             <img
               src={img}
               alt={product.title}
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-              }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
             />
           </div>
 
-          {/* Panneau blanc pour tout le texte */}
+          {/* Zone blanche pour le texte */}
           <div
             style={{
               background: "#ffffff",
@@ -304,15 +307,11 @@ export default function Page({ params }: { params: { id: string } }) {
               borderRadius: 16,
               padding: "32px",
               color: "#111827",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
               boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
             }}
           >
             <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.2 }}>{product.title}</h1>
 
-            {/* Prix avec libellé */}
             <div style={{ marginTop: 12, display: "flex", alignItems: "baseline", gap: 12 }}>
               <p style={{ fontSize: 22, fontWeight: 600 }}>
                 <span style={{ fontWeight: 500, marginRight: 8 }}>Prix :</span>
@@ -327,14 +326,13 @@ export default function Page({ params }: { params: { id: string } }) {
                 )}
             </div>
 
-            {/* Description */}
             {"description" in product && (product as any).description && (
               <p style={{ marginTop: 16, color: "#374151", whiteSpace: "pre-line", lineHeight: 1.6 }}>
                 {(product as any).description}
               </p>
             )}
 
-            {/* LIGNE 1 : Quantité */}
+            {/* Quantité */}
             <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 12 }}>
               <label htmlFor="qty" style={{ fontSize: 14, fontWeight: 500, color: "#374151" }}>
                 Quantité
@@ -347,34 +345,29 @@ export default function Page({ params }: { params: { id: string } }) {
                 value={qty}
                 onChange={(e) => {
                   const n = Number(e.target.value);
-                  if (Number.isFinite(n)) {
-                    const clamped = Math.max(1, Math.min(999, n));
-                    setQty(clamped);
-                  }
+                  if (Number.isFinite(n)) setQty(Math.max(1, Math.min(999, n)));
                 }}
                 style={{
                   width: 96,
                   padding: "8px 12px",
                   borderRadius: 10,
-                  border: "1px solid #d1d5db",
+                  border: "1px solid "#d1d5db",
                   outline: "none",
                   fontSize: 16,
                 }}
               />
             </div>
 
-            {/* ESPACE */}
             <div style={{ height: 12 }} />
 
-            {/* LIGNE 2 : Total */}
+            {/* Total */}
             <div style={{ fontSize: 18, fontWeight: 600, color: "#111827" }}>
               Total : <span>{money(total)}</span>
             </div>
 
-            {/* ESPACE */}
             <div style={{ height: 12 }} />
 
-            {/* LIGNE 3 : Bouton turquoise */}
+            {/* Bouton turquoise Ajouter au panier */}
             <button
               type="button"
               onClick={handleAdd}
@@ -389,14 +382,14 @@ export default function Page({ params }: { params: { id: string } }) {
                 borderRadius: 12,
                 fontSize: 18,
                 fontWeight: 700,
-                backgroundColor: "#14b8a6", // teal-500
+                backgroundColor: "#14b8a6",
                 color: "#ffffff",
                 border: "none",
                 cursor: "pointer",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
               }}
-              onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = "#0d9488"))} // teal-600
-              onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = "#14b8a6"))} // teal-500
+              onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = "#0d9488"))}
+              onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = "#14b8a6"))}
             >
               Ajouter au panier
             </button>
