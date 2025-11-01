@@ -1,9 +1,10 @@
 // app/products/[id]/page.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { products } from "@/lib/products";
 
+// ---------- Utils ----------
 const money = (v: number) =>
   new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" }).format(v);
 
@@ -11,34 +12,228 @@ function findById(id: string) {
   return products.find((p) => p?.id === id) ?? null;
 }
 
-// --- Panier minimal côté client (localStorage) ---
-function addToCartClient(item: {
+type CartItem = {
   id: string;
   title: string;
   price: number;
   image: string;
   qty: number;
-}) {
-  if (typeof window === "undefined") return false;
+};
+
+const CART_KEY = "dp_cart";
+
+function readCart(): CartItem[] {
+  if (typeof window === "undefined") return [];
   try {
-    const KEY = "dp_cart";
-    const raw = window.localStorage.getItem(KEY);
-    const cart: any[] = raw ? JSON.parse(raw) : [];
-    const i = cart.findIndex((x) => x && x.id === item.id);
-    if (i >= 0) {
-      cart[i].qty = Math.min(999, Number(cart[i].qty || 0) + item.qty);
-    } else {
-      cart.push(item);
-    }
-    window.localStorage.setItem(KEY, JSON.stringify(cart));
-    // Éventuel événement pour un badge panier ailleurs
-    window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
-    return true;
+    const raw = window.localStorage.getItem(CART_KEY);
+    return raw ? JSON.parse(raw) : [];
   } catch {
-    return false;
+    return [];
   }
 }
 
+function writeCart(next: CartItem[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(CART_KEY, JSON.stringify(next));
+  window.dispatchEvent(new CustomEvent("cart:updated", { detail: next }));
+}
+
+function addToCart(item: CartItem) {
+  const cart = readCart();
+  const i = cart.findIndex((x) => x && x.id === item.id);
+  if (i >= 0) {
+    cart[i].qty = Math.min(999, Number(cart[i].qty || 0) + item.qty);
+  } else {
+    cart.push(item);
+  }
+  writeCart(cart);
+}
+
+function removeFromCart(id: string) {
+  const cart = readCart().filter((x) => x.id !== id);
+  writeCart(cart);
+}
+
+// ---------- Panier latéral (drawer) ----------
+function CartDrawer() {
+  const [open, setOpen] = useState(false);
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    // charge au montage
+    setCart(readCart());
+    // écoute les mises à jour
+    const onUpdate = (e: any) => setCart(e.detail ?? readCart());
+    window.addEventListener("cart:updated", onUpdate as any);
+    return () => window.removeEventListener("cart:updated", onUpdate as any);
+  }, []);
+
+  const total = useMemo(
+    () => cart.reduce((acc, it) => acc + it.price * it.qty, 0),
+    [cart]
+  );
+
+  return (
+    <>
+      {/* Bouton pour ouvrir */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        style={{
+          position: "fixed",
+          top: 16,
+          right: 16,
+          zIndex: 50,
+          appearance: "none",
+          padding: "10px 16px",
+          borderRadius: 12,
+          backgroundColor: "#14b8a6",
+          color: "#fff",
+          fontWeight: 700,
+          border: "none",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          cursor: "pointer",
+        }}
+      >
+        Panier ({cart.reduce((n, it) => n + it.qty, 0)})
+      </button>
+
+      {/* Overlay */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.35)",
+            zIndex: 40,
+          }}
+        />
+      )}
+
+      {/* Drawer */}
+      <aside
+        style={{
+          position: "fixed",
+          top: 0,
+          right: 0,
+          height: "100vh",
+          width: 320,
+          maxWidth: "85vw",
+          background: "#ffffff",
+          borderLeft: "1px solid #e5e7eb",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+          transform: `translateX(${open ? "0%" : "100%"})`,
+          transition: "transform 200ms ease",
+          zIndex: 50,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            padding: "14px 16px",
+            borderBottom: "1px solid #e5e7eb",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <strong style={{ fontSize: 18 }}>Votre panier</strong>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            style={{
+              appearance: "none",
+              border: "none",
+              background: "transparent",
+              fontSize: 22,
+              cursor: "pointer",
+              lineHeight: 1,
+            }}
+            aria-label="Fermer"
+          >
+            ×
+          </button>
+        </div>
+
+        <div
+          style={{
+            padding: 16,
+            overflowY: "auto",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+          }}
+        >
+          {cart.length === 0 && <div style={{ color: "#6b7280" }}>Panier vide.</div>}
+
+          {cart.map((it) => (
+            <div
+              key={it.id}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "64px 1fr auto",
+                gap: 10,
+                alignItems: "center",
+                border: "1px solid #e5e7eb",
+                borderRadius: 12,
+                padding: 8,
+              }}
+            >
+              <img
+                src={it.image?.startsWith("/") ? it.image : `/${it.image}`}
+                alt={it.title}
+                style={{ width: 64, height: 64, objectFit: "contain" }}
+              />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 14, lineHeight: 1.3 }}>{it.title}</div>
+                <div style={{ fontSize: 13, color: "#6b7280" }}>
+                  {it.qty} × {money(it.price)}
+                </div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontWeight: 700 }}>{money(it.price * it.qty)}</div>
+                <button
+                  type="button"
+                  onClick={() => removeFromCart(it.id)}
+                  style={{
+                    marginTop: 6,
+                    appearance: "none",
+                    border: "none",
+                    background: "transparent",
+                    color: "#ef4444",
+                    cursor: "pointer",
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}
+                >
+                  Retirer
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            borderTop: "1px solid #e5e7eb",
+            padding: 16,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ fontWeight: 700 }}>Total</div>
+          <div style={{ fontWeight: 800 }}>{money(total)}</div>
+        </div>
+      </aside>
+    </>
+  );
+}
+
+// ---------- Page produit ----------
 export default function Page({ params }: { params: { id: string } }) {
   const product = findById(params.id);
   const [qty, setQty] = useState<number>(1);
@@ -54,26 +249,28 @@ export default function Page({ params }: { params: { id: string } }) {
     );
   }
 
-  // accepte "maretau.png" ou "/maretau.png"
   const img = product.image?.startsWith("/") ? product.image : `/${product.image}`;
-  const total = useMemo(() => Math.max(1, Math.min(999, Number(qty) || 1)) * product.price, [qty, product.price]);
+  const total = useMemo(
+    () => Math.max(1, Math.min(999, Number(qty) || 1)) * product.price,
+    [qty, product.price]
+  );
 
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); // au cas où
-    const success = addToCartClient({
+    e.preventDefault();
+    addToCart({
       id: product.id,
       title: product.title,
       price: product.price,
       image: img,
       qty: Math.max(1, Math.min(999, Number(qty) || 1)),
     });
-    // Pas de message visuel demandé, mais on loggue pour debug
-    if (!success) console.error("Impossible d’ajouter au panier (localStorage)");
   };
 
   return (
-    // Bande blanche derrière toute la section
     <section style={{ background: "#ffffff" }}>
+      {/* Panier latéral (reste présent sur la page et s’actualise en direct) */}
+      <CartDrawer />
+
       <div style={{ maxWidth: 1120, margin: "0 auto", padding: "40px 24px" }}>
         {/* 2 colonnes */}
         <div
@@ -109,109 +306,100 @@ export default function Page({ params }: { params: { id: string } }) {
               color: "#111827",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between",
+              justifyContent: "flex-start",
               boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
             }}
           >
-            <div>
-              <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.2 }}>{product.title}</h1>
+            <h1 style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.2 }}>{product.title}</h1>
 
-              {/* Prix avec libellé */}
-              <div style={{ marginTop: 12, display: "flex", alignItems: "baseline", gap: 12 }}>
-                <p style={{ fontSize: 22, fontWeight: 600 }}>
-                  <span style={{ fontWeight: 500, marginRight: 8 }}>Prix :</span>
-                  {money(product.price)}
-                </p>
-                {"compareAt" in product &&
-                  typeof (product as any).compareAt === "number" &&
-                  (product as any).compareAt > product.price && (
-                    <span style={{ fontSize: 14, color: "#6b7280", textDecoration: "line-through" }}>
-                      {money((product as any).compareAt as number)}
-                    </span>
-                  )}
-              </div>
-
-              {/* Description */}
-              {"description" in product && (product as any).description && (
-                <p style={{ marginTop: 16, color: "#374151", whiteSpace: "pre-line", lineHeight: 1.6 }}>
-                  {(product as any).description}
-                </p>
-              )}
-
-              {/* LIGNE 1 : Quantité */}
-              <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 12 }}>
-                <label htmlFor="qty" style={{ fontSize: 14, fontWeight: 500, color: "#374151" }}>
-                  Quantité
-                </label>
-                <input
-                  id="qty"
-                  type="number"
-                  min={1}
-                  max={999}
-                  value={qty}
-                  onChange={(e) => {
-                    const n = Number(e.target.value);
-                    if (Number.isFinite(n)) {
-                      const clamped = Math.max(1, Math.min(999, n));
-                      setQty(clamped);
-                    }
-                  }}
-                  style={{
-                    width: 96,
-                    padding: "8px 12px",
-                    borderRadius: 10,
-                    border: "1px solid #d1d5db",
-                    outline: "none",
-                    fontSize: 16,
-                  }}
-                />
-              </div>
-
-              {/* Espace visible */}
-              <div style={{ height: 12 }} />
-
-              {/* LIGNE 2 : Total */}
-              <div style={{ fontSize: 18, fontWeight: 600, color: "#111827" }}>
-                Total : <span>{money(total)}</span>
-              </div>
-
-              {/* Espace visible */}
-              <div style={{ height: 12 }} />
-
-              {/* LIGNE 3 : Bouton turquoise (moins large, plus haut) */}
-              <button
-                type="button"
-                onClick={handleAdd}
-                style={{
-                  appearance: "none",
-                  WebkitAppearance: "none",
-                  MozAppearance: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "14px 28px", // plus haut
-                  borderRadius: 12,
-                  fontSize: 18,
-                  fontWeight: 700,
-                  backgroundColor: "#14b8a6", // teal-500
-                  color: "#ffffff",
-                  border: "none",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                }}
-                onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = "#0d9488"))} // teal-600
-                onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = "#14b8a6"))} // teal-500
-              >
-                Ajouter au panier
-              </button>
+            {/* Prix avec libellé */}
+            <div style={{ marginTop: 12, display: "flex", alignItems: "baseline", gap: 12 }}>
+              <p style={{ fontSize: 22, fontWeight: 600 }}>
+                <span style={{ fontWeight: 500, marginRight: 8 }}>Prix :</span>
+                {money(product.price)}
+              </p>
+              {"compareAt" in product &&
+                typeof (product as any).compareAt === "number" &&
+                (product as any).compareAt > product.price && (
+                  <span style={{ fontSize: 14, color: "#6b7280", textDecoration: "line-through" }}>
+                    {money((product as any).compareAt as number)}
+                  </span>
+                )}
             </div>
 
-            {"inStock" in product &&
-              ((product as any).inStock === false ? (
-                <p style={{ marginTop: 16, fontSize: 14, color: "#dc2626" }}>Rupture de stock</p>
-              ) : (
-                <p style={{ marginTop: 16, fontSize: 14, color: "#047857" }}>En stock</p>
-              ))}
+            {/* Description */}
+            {"description" in product && (product as any).description && (
+              <p style={{ marginTop: 16, color: "#374151", whiteSpace: "pre-line", lineHeight: 1.6 }}>
+                {(product as any).description}
+              </p>
+            )}
+
+            {/* LIGNE 1 : Quantité */}
+            <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 12 }}>
+              <label htmlFor="qty" style={{ fontSize: 14, fontWeight: 500, color: "#374151" }}>
+                Quantité
+              </label>
+              <input
+                id="qty"
+                type="number"
+                min={1}
+                max={999}
+                value={qty}
+                onChange={(e) => {
+                  const n = Number(e.target.value);
+                  if (Number.isFinite(n)) {
+                    const clamped = Math.max(1, Math.min(999, n));
+                    setQty(clamped);
+                  }
+                }}
+                style={{
+                  width: 96,
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #d1d5db",
+                  outline: "none",
+                  fontSize: 16,
+                }}
+              />
+            </div>
+
+            {/* ESPACE */}
+            <div style={{ height: 12 }} />
+
+            {/* LIGNE 2 : Total */}
+            <div style={{ fontSize: 18, fontWeight: 600, color: "#111827" }}>
+              Total : <span>{money(total)}</span>
+            </div>
+
+            {/* ESPACE */}
+            <div style={{ height: 12 }} />
+
+            {/* LIGNE 3 : Bouton turquoise */}
+            <button
+              type="button"
+              onClick={handleAdd}
+              style={{
+                appearance: "none",
+                WebkitAppearance: "none",
+                MozAppearance: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "14px 28px",
+                borderRadius: 12,
+                fontSize: 18,
+                fontWeight: 700,
+                backgroundColor: "#14b8a6", // teal-500
+                color: "#ffffff",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+              }}
+              onMouseOver={(e) => ((e.currentTarget.style.backgroundColor = "#0d9488"))} // teal-600
+              onMouseOut={(e) => ((e.currentTarget.style.backgroundColor = "#14b8a6"))} // teal-500
+            >
+              Ajouter au panier
+            </button>
           </div>
         </div>
       </div>
