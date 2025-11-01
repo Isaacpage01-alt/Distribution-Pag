@@ -19,18 +19,19 @@ function addToCartClient(item: {
   image: string;
   qty: number;
 }) {
+  if (typeof window === "undefined") return false;
   try {
     const KEY = "dp_cart";
-    const raw = localStorage.getItem(KEY);
+    const raw = window.localStorage.getItem(KEY);
     const cart: any[] = raw ? JSON.parse(raw) : [];
-    const i = cart.findIndex((x) => x.id === item.id);
+    const i = cart.findIndex((x) => x && x.id === item.id);
     if (i >= 0) {
-      cart[i].qty = Math.min(999, (cart[i].qty || 0) + item.qty);
+      cart[i].qty = Math.min(999, Number(cart[i].qty || 0) + item.qty);
     } else {
       cart.push(item);
     }
-    localStorage.setItem(KEY, JSON.stringify(cart));
-    // Optionnel: avertir d'autres composants
+    window.localStorage.setItem(KEY, JSON.stringify(cart));
+    // Éventuel événement pour un badge panier ailleurs
     window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
     return true;
   } catch {
@@ -41,7 +42,6 @@ function addToCartClient(item: {
 export default function Page({ params }: { params: { id: string } }) {
   const product = findById(params.id);
   const [qty, setQty] = useState<number>(1);
-  const [ok, setOk] = useState<null | "ok" | "err">(null);
 
   if (!product) {
     return (
@@ -56,12 +56,10 @@ export default function Page({ params }: { params: { id: string } }) {
 
   // accepte "maretau.png" ou "/maretau.png"
   const img = product.image?.startsWith("/") ? product.image : `/${product.image}`;
-  const total = useMemo(
-    () => Math.max(1, Math.min(999, Number(qty) || 1)) * product.price,
-    [qty, product.price]
-  );
+  const total = useMemo(() => Math.max(1, Math.min(999, Number(qty) || 1)) * product.price, [qty, product.price]);
 
-  const handleAdd = () => {
+  const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // au cas où
     const success = addToCartClient({
       id: product.id,
       title: product.title,
@@ -69,9 +67,8 @@ export default function Page({ params }: { params: { id: string } }) {
       image: img,
       qty: Math.max(1, Math.min(999, Number(qty) || 1)),
     });
-    setOk(success ? "ok" : "err");
-    // petit reset visuel du message
-    setTimeout(() => setOk(null), 1800);
+    // Pas de message visuel demandé, mais on loggue pour debug
+    if (!success) console.error("Impossible d’ajouter au panier (localStorage)");
   };
 
   return (
@@ -170,7 +167,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 />
               </div>
 
-              {/* ESPACE visible */}
+              {/* Espace visible */}
               <div style={{ height: 12 }} />
 
               {/* LIGNE 2 : Total */}
@@ -178,7 +175,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 Total : <span>{money(total)}</span>
               </div>
 
-              {/* ESPACE visible */}
+              {/* Espace visible */}
               <div style={{ height: 12 }} />
 
               {/* LIGNE 3 : Bouton turquoise (moins large, plus haut) */}
@@ -207,18 +204,6 @@ export default function Page({ params }: { params: { id: string } }) {
               >
                 Ajouter au panier
               </button>
-
-              {/* mini feedback */}
-              {ok === "ok" && (
-                <div style={{ marginTop: 10, fontSize: 14, color: "#047857", fontWeight: 600 }}>
-                  Ajouté au panier ✅
-                </div>
-              )}
-              {ok === "err" && (
-                <div style={{ marginTop: 10, fontSize: 14, color: "#dc2626", fontWeight: 600 }}>
-                  Oups — impossible d’ajouter. Réessaie.
-                </div>
-              )}
             </div>
 
             {"inStock" in product &&
