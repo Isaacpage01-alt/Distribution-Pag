@@ -25,7 +25,7 @@ export const products: Product[] = [
   },
   {
     id: "out-002",
-    title: "Tournevis cruciforme #2",
+    title: "support mural noir",
     price: 5.49,
     image: "/next.svg",
     category: "outils",
@@ -53,12 +53,12 @@ export const products: Product[] = [
   },
   {
     id: "qui-002",
-    title: "Boulon M8 × 30 mm",
-    price: 0.12,
-    image: "/globe.svg",
+    title: "support mural noir",
+    price: 25,
+    image: "/support mural noir.jpg",
     category: "quincaillerie",
     categorySlug: "quincaillerie",
-    packOptions: [10, 25, 50, 100],
+    packOptions: [2,4,6],
   },
   {
     id: "qui-003",
