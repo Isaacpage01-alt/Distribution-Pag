@@ -25,9 +25,9 @@ export const products: Product[] = [
   },
   {
     id: "out-002",
-    title: "support mural noir",
-    price: 5.49,
-    image: "/next.svg",
+    title: "31 embouts de tournevis avec adaptateur magnétique",
+    price: 23,
+    image: "/embout tournevis.jpg",
     category: "outils",
     categorySlug: "outils",
   },
